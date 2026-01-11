@@ -1,0 +1,79 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Virtual Environment
+venv/
+.env/
+.env.*
+.venv/
+
+# =========================
+# Banco de Dados
+# =========================
+# SQLite
+*.db
+*.sqlite3
+
+# Dumps de banco (backup)
+*.sql
+
+# =========================
+# Variáveis de ambiente
+# =========================
+.env
+.env.local
+.env.dev
+.env.prod
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+
+# =========================
+# IDEs e Editores
+# =========================
+# VS Code
+.vscode/
+
+# Cursor
+.cursor/
+
+# JetBrains (DataGrip, PyCharm, etc)
+.idea/
+
+# =========================
+# Sistema Operacional
+# =========================
+# Linux
+*~
+.nfs*
+
+# Mac
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# =========================
+# Testes e Coverage
+# =========================
+.coverage
+htmlcov/
+.pytest_cache/
+
+# =========================
+# Cache geral
+# =========================
+.cache/

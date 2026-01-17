@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 import os
 
-load_dotenv(Path(".env")) # Carrega as variáveis de ambiente do arquivo .env
+load_dotenv() # Carrega as variáveis de ambiente do arquivo .env
 
 def get_connection():
     try:
@@ -16,7 +16,6 @@ def get_connection():
         return connection
 
     except Error as error:
-        print(f"Erro na conexão com o banco de dados: {error}")
         raise error # Re-lança o erro para ser tratado pelo chamador
 
 

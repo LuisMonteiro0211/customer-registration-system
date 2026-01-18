@@ -4,8 +4,11 @@
 # TODO: update_customer(id, dto) -> Atualiza o cliente e retorna o ID final
 # TODO: delete_customer(id) -> Chama o repositório para deletar o cliente pelo ID
 
+from datetime import date
+
 from src.repositories.customer_repository import CustomerRepository
 from src.dtos.customer_dto import CreateCustomerDTO
+
 
 
 class CustomerService:
@@ -13,4 +16,9 @@ class CustomerService:
         self.customer_repository = customer_repository # Recebe uma instância do repositório já pronta para uso
 
     def create_customer(self, customer_dto: CreateCustomerDTO) -> int:
-        pass
+        customer = customer_dto
+
+        if not customer.first_name or customer.first_name.isspace():
+            ## Validação do primeiro nome do cliente
+            raise ValueError("Nome do cliente invpalido")
+        

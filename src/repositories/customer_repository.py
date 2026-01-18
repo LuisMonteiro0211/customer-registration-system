@@ -1,6 +1,7 @@
-from models.customer import Customer
+from src.models.customer import Customer
+from src.database.connection import get_connection
+
 from typing import List
-from database.connection import get_connection
 from mysql.connector import Error
 class CustomerRepository:
     def __init__(self) -> None:

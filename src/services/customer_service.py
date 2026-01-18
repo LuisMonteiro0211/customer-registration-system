@@ -9,8 +9,6 @@ from datetime import date
 from src.repositories.customer_repository import CustomerRepository
 from src.dtos.customer_dto import CreateCustomerDTO
 
-
-
 class CustomerService:
     def __init__(self, customer_repository: CustomerRepository):
         self.customer_repository = customer_repository # Recebe uma instância do repositório já pronta para uso
@@ -22,3 +20,16 @@ class CustomerService:
             ## Validação do primeiro nome do cliente
             raise ValueError("Nome do cliente invpalido")
         
+        if not customer.last_name or customer.last_name.isspace():
+            ## Validação do sobrenome do cliente
+            raise ValueError("Sobrenome do cliente invpalido")
+        
+        if not customer.birth_date:
+            ## Validação se tem valor para a data de nascimento
+            raise ValueError("Data de nascimento invalida")
+            
+        
+
+
+if __name__ == "__main__":
+    print(f"Testando data: {date.today()}")

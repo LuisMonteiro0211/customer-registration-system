@@ -27,9 +27,16 @@ class CustomerService:
         if not customer.birth_date:
             ## Validação se tem valor para a data de nascimento
             raise ValueError("Data de nascimento invalida")
-            
+
+        if customer.birth_date> date.today() or customer.birth_date < date(1900, 1, 1):
+            raise ValueError("Data de nascimento inválida!")
+
+        if not customer.email or customer.email.isspace() or "@" not in customer.email:
+            ## Validação do email do cliente
+            raise ValueError("Email do cliente inválido")
         
-
-
-if __name__ == "__main__":
-    print(f"Testando data: {date.today()}")
+        if not customer.phone or customer.phone.isspace() or len(customer.phone) != 15:
+            ## Validação do telefone do cliente
+            raise ValueError("Telefone do cliente inválido")
+        
+        return self.customer_repository.create(customer)

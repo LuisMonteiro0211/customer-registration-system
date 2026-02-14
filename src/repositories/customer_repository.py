@@ -33,7 +33,18 @@ class CustomerRepository:
 
     def get_all(self) -> List[Customer]:
         # TODO: get_all() -> Retorna lista com todos os clientes
-        pass
+        with get_connection() as cursor:
+            query = """
+            SELECT * FROM customer
+            """
+            params = ()
+            cursor.execute(query, params)
+            results = cursor.fetchall()
+            
+            if len(results) == 0:
+                raise ValueError("Nenhum cliente encontrado")
+
+            return [Customer(*result) for result in results]
 
     def update(self, customer: Customer) -> int:
         # TODO: update(customer) -> Atualiza o cliente e retorna o ID final

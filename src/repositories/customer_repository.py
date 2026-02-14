@@ -18,8 +18,18 @@ class CustomerRepository:
             return cursor.lastrowid
 
     def get_by_id(self, id: int) -> Customer:
-        # TODO: get_by_id(id) -> Retorna o cliente pelo ID
-        pass
+        with get_connection() as cursor:
+            query = """
+            SELECT * FROM customer
+            WHERE id = %s
+            """
+            params = (id,)
+            cursor.execute(query, params)
+            result = cursor.fetchone()
+            if result is None:
+                raise ValueError(f"Cliente com ID {id} não encontrado")
+
+            return Customer(*result)
 
     def get_all(self) -> List[Customer]:
         # TODO: get_all() -> Retorna lista com todos os clientes

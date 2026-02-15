@@ -8,4 +8,12 @@ class CreateCustomerDTO:
     birth_date: date
     email: str
     phone: str
-    
+
+@dataclass
+class UpdateCustomerDTO:
+    id: int
+    first_name: str
+    last_name: str
+    birth_date: date
+    email: str
+    phone: str

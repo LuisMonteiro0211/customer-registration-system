@@ -3,11 +3,28 @@ from src.database.connection import get_connection
 
 from typing import List
 class CustomerRepository:
+    """
+    Repositório de clientes
+    Atributos:
+        - Nenhum
+    Métodos:
+        - create(customer: Customer) -> int: Salva o cliente e retorna o ID final
+        - get_by_id(id: int) -> Customer: Retorna o cliente pelo ID
+        - get_all() -> List[Customer]: Retorna lista com todos os clientes
+        - update(customer: Customer) -> int: Atualiza o cliente e retorna o ID final
+        - delete(id: int) -> int: Deleta o cliente pelo ID
+    """
     def __init__(self) -> None:
         pass
 
     def create(self, customer: Customer) -> int:
-        # TODO: create(customer) -> Salva o cliente e retorna o ID final
+        """
+        Salva o cliente e retorna o ID final
+        Args:
+            customer: Customer: Cliente a ser salvo
+        Returns:
+            int: ID do cliente salvo
+        """
         with get_connection() as cursor:
             query = """
             INSERT INTO customer (first_name, last_name, birth_date, email, phone)
@@ -18,6 +35,13 @@ class CustomerRepository:
             return cursor.lastrowid
 
     def get_by_id(self, id: int) -> Customer:
+        """
+        Retorna o cliente pelo ID
+        Args:
+            id: int: ID do cliente a ser retornado
+        Returns:
+            Customer: Cliente encontrado
+        """
         with get_connection() as cursor:
             query = """
             SELECT * FROM customer
@@ -32,6 +56,11 @@ class CustomerRepository:
             return Customer(*result)
 
     def get_all(self) -> List[Customer]:
+        """
+        Retorna lista com todos os clientes
+        Returns:
+            List[Customer]: Lista com todos os clientes
+        """
         with get_connection() as cursor:
             query = """
             SELECT * FROM customer
@@ -39,13 +68,17 @@ class CustomerRepository:
             params = ()
             cursor.execute(query, params)
             results = cursor.fetchall()
-            
-            if len(results) == 0:
-                raise ValueError("Nenhum cliente encontrado")
 
             return [Customer(*result) for result in results]
 
     def update(self, customer: Customer) -> int:
+        """
+        Atualiza o cliente e retorna o ID final
+        Args:
+            customer: Customer: Cliente a ser atualizado
+        Returns:
+            int: ID do cliente atualizado
+        """
         with get_connection() as cursor:
             query = """
             UPDATE customer
@@ -54,9 +87,17 @@ class CustomerRepository:
             """
             params = (customer.first_name, customer.last_name, customer.birth_date, customer.email, customer.phone, customer.id)
             cursor.execute(query, params)
+
             return cursor.rowcount
 
     def delete(self, id: int) -> int:
+        """
+        Deleta o cliente pelo ID
+        Args:
+            id: int: ID do cliente a ser deletado
+        Returns:
+            int: Número de linhas deletadas
+        """
         with get_connection() as cursor:
             query = """
             DELETE FROM customer

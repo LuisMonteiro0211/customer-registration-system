@@ -7,8 +7,9 @@
 from datetime import date
 from src.models.customer import Customer
 from src.repositories.customer_repository import CustomerRepository
-from src.dtos.customer_dto import CreateCustomerDTO
+from src.dtos.customer_dto import CreateCustomerDTO, UpdateCustomerDTO
 from typing import List
+from src.utils.validators import validate_id, validate_name, validate_email, validate_phone, validate_birth_date
 import logging
 
 class CustomerService:
@@ -25,7 +26,7 @@ class CustomerService:
             - delete_customer(id: int) -> int: Deleta um cliente pelo ID
         """
         self.customer_repository = customer_repository # Recebe uma instância do repositório já pronta para uso
-
+        
     def create_customer(self, customer_dto: CreateCustomerDTO) -> int:
         """
         Cria um novo cliente
@@ -34,39 +35,14 @@ class CustomerService:
         Returns:
             int: ID do cliente criado
         """
-        customer = customer_dto
+        validate_name(customer_dto.first_name)
+        validate_name(customer_dto.last_name)
+        validate_birth_date(customer_dto.birth_date)
+        validate_email(customer_dto.email)
+        validate_phone(customer_dto.phone)
 
-        if not customer.first_name or customer.first_name.isspace():
-            ## Validação do primeiro nome do cliente
-            logging.warning("Nome do cliente invalido")
-            raise ValueError("Nome do cliente invalido")
-        
-        if not customer.last_name or customer.last_name.isspace():
-            ## Validação do sobrenome do cliente
-            logging.warning("Sobrenome do cliente invalido")
-            raise ValueError("Sobrenome do cliente invalido")
-        
-        if not customer.birth_date:
-            ## Validação se tem valor para a data de nascimento
-            logging.warning("Data de nascimento invalida")
-            raise ValueError("Data de nascimento invalida")
-
-        if customer.birth_date> date.today() or customer.birth_date < date(1900, 1, 1):
-            logging.warning("Data de nascimento invalida!")
-            raise ValueError("Data de nascimento invalida!")
-
-        if not customer.email or customer.email.isspace() or "@" not in customer.email:
-            ## Validação do email do cliente
-            logging.warning("Email do cliente invalido")
-            raise ValueError("Email do cliente invalido")
-        
-        if not customer.phone or customer.phone.isspace() or len(customer.phone) != 15:
-            ## Validação do telefone do cliente
-            logging.warning("Telefone do cliente invalido")
-            raise ValueError("Telefone do cliente invalido")
-        
         try:
-            created = self.customer_repository.create(customer)
+            created = self.customer_repository.create(customer_dto)
             logging.info(f"Cliente criado com sucesso! ID: {created}")
             return created
         except Exception as e:
@@ -77,15 +53,13 @@ class CustomerService:
     def get_customer_by_id(self, id: int) -> Customer:
         """
         Retorna um cliente pelo ID
-        
+
         Args:
             id: int: ID do cliente a ser retornado
         Returns:
             Customer: Cliente encontrado
         """
-        if not id or id <= 0:
-            logging.warning("ID do cliente invalido")
-            raise ValueError("ID do cliente invalido")
+        validate_id(id)
 
         try:
             result = self.customer_repository.get_by_id(id)
@@ -110,4 +84,45 @@ class CustomerService:
             return result
         except Exception as e:
             logging.error("Erro ao buscar clientes!")
+            raise e
+
+    def update_customer(self,customer_update_dto: UpdateCustomerDTO) -> int:
+        """
+        Atualiza um cliente
+        Args:
+            customer_update_dto: UpdateCustomerDTO: DTO de atualização de cliente
+        Returns:
+            int: ID do cliente atualizado
+        """
+        validate_id(customer_update_dto.id)
+        validate_name(customer_update_dto.first_name)
+        validate_name(customer_update_dto.last_name)
+        validate_birth_date(customer_update_dto.birth_date)
+        validate_email(customer_update_dto.email)
+        validate_phone(customer_update_dto.phone)
+
+        try:
+            updated = self.customer_repository.update(customer_update_dto)
+            logging.info(f"Cliente atualizado com sucesso! ID: {updated}")
+            return updated
+        except Exception as e:
+            logging.error("Erro ao atualizar cliente!")
+            raise e
+    
+    def delete_customer(self, id: int) -> int:
+        """
+        Deleta um cliente pelo ID
+        Args:
+            id: int: ID do cliente a ser deletado
+        Returns:
+            int: Número de linhas deletadas
+        """
+        validate_id(id)
+
+        try:
+            deleted = self.customer_repository.delete(id)
+            logging.info(f"Cliente deletado com sucesso! ID: {id}")
+            return deleted
+        except Exception as e:
+            logging.error("Erro ao deletar cliente!")
             raise e

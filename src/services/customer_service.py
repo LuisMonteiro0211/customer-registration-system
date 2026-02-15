@@ -12,9 +12,27 @@ import logging
 
 class CustomerService:
     def __init__(self, customer_repository: CustomerRepository):
+        """
+        Serviço de clientes
+        Atributos:
+            - customer_repository: CustomerRepository: Repositório de clientes (Instância do repositório já pronta para uso - Injeção de Dependência)
+        Métodos:
+            - create_customer(customer_dto: CreateCustomerDTO) -> int: Cria um novo cliente
+            - get_customer_by_id(id: int) -> Customer: Retorna um cliente pelo ID
+            - get_all_customers() -> List[Customer]: Retorna todos os clientes
+            - update_customer(id: int, customer_dto: UpdateCustomerDTO) -> int: Atualiza um cliente
+            - delete_customer(id: int) -> int: Deleta um cliente pelo ID
+        """
         self.customer_repository = customer_repository # Recebe uma instância do repositório já pronta para uso
 
     def create_customer(self, customer_dto: CreateCustomerDTO) -> int:
+        """
+        Cria um novo cliente
+        Args:
+            customer_dto: CreateCustomerDTO: DTO de criação de cliente
+        Returns:
+            int: ID do cliente criado
+        """
         customer = customer_dto
 
         if not customer.first_name or customer.first_name.isspace():
@@ -56,6 +74,13 @@ class CustomerService:
 
 
     def get_customer_by_id(self, id: int) -> Customer:
+        """
+        Retorna um cliente pelo ID
+        Args:
+            id: int: ID do cliente a ser retornado
+        Returns:
+            Customer: Cliente encontrado
+        """
         if not id or id <= 0:
             logging.warning("ID do cliente invalido")
             raise ValueError("ID do cliente invalido")

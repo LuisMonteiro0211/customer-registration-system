@@ -8,6 +8,7 @@ from datetime import date
 from src.models.customer import Customer
 from src.repositories.customer_repository import CustomerRepository
 from src.dtos.customer_dto import CreateCustomerDTO
+from typing import List
 import logging
 
 class CustomerService:
@@ -76,6 +77,7 @@ class CustomerService:
     def get_customer_by_id(self, id: int) -> Customer:
         """
         Retorna um cliente pelo ID
+        
         Args:
             id: int: ID do cliente a ser retornado
         Returns:
@@ -91,4 +93,21 @@ class CustomerService:
             return result
         except ValueError as e:
             logging.warning("Cliente não encontrado!")
+            raise e
+
+    def get_all_customers(self) -> List[Customer]:
+        """
+        Retorna todos os clientes
+
+        Args:
+            Nenhum
+        Returns:
+            List[Customer]: Lista com todos os clientes
+        """
+        try:
+            result = self.customer_repository.get_all()
+            logging.info(f"{len(result)} Clientes encontrados com sucesso!")
+            return result
+        except Exception as e:
+            logging.error("Erro ao buscar clientes!")
             raise e

@@ -56,6 +56,13 @@ class CustomerRepository:
             cursor.execute(query, params)
             return cursor.rowcount
 
-    def delete(self, id: int) -> None:
-        # TODO: delete(id) -> Deleta o cliente pelo ID
-        pass
+    def delete(self, id: int) -> int:
+        with get_connection() as cursor:
+            query = """
+            DELETE FROM customer
+            WHERE id = %s
+            """
+            params = (id,)
+            cursor.execute(query, params)
+            return cursor.rowcount
+            

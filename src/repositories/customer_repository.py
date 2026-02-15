@@ -32,7 +32,6 @@ class CustomerRepository:
             return Customer(*result)
 
     def get_all(self) -> List[Customer]:
-        # TODO: get_all() -> Retorna lista com todos os clientes
         with get_connection() as cursor:
             query = """
             SELECT * FROM customer
@@ -47,8 +46,15 @@ class CustomerRepository:
             return [Customer(*result) for result in results]
 
     def update(self, customer: Customer) -> int:
-        # TODO: update(customer) -> Atualiza o cliente e retorna o ID final
-        pass
+        with get_connection() as cursor:
+            query = """
+            UPDATE customer
+            SET first_name = %s, last_name = %s, birth_date = %s, email = %s, phone = %s
+            WHERE id = %s
+            """
+            params = (customer.first_name, customer.last_name, customer.birth_date, customer.email, customer.phone, customer.id)
+            cursor.execute(query, params)
+            return cursor.rowcount
 
     def delete(self, id: int) -> None:
         # TODO: delete(id) -> Deleta o cliente pelo ID

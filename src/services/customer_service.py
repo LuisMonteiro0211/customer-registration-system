@@ -5,9 +5,10 @@
 # TODO: delete_customer(id) -> Chama o repositório para deletar o cliente pelo ID
 
 from datetime import date
-
+from src.models.customer import Customer
 from src.repositories.customer_repository import CustomerRepository
 from src.dtos.customer_dto import CreateCustomerDTO
+import logging
 
 class CustomerService:
     def __init__(self, customer_repository: CustomerRepository):
@@ -18,25 +19,51 @@ class CustomerService:
 
         if not customer.first_name or customer.first_name.isspace():
             ## Validação do primeiro nome do cliente
-            raise ValueError("Nome do cliente invpalido")
+            logging.warning("Nome do cliente invalido")
+            raise ValueError("Nome do cliente invalido")
         
         if not customer.last_name or customer.last_name.isspace():
             ## Validação do sobrenome do cliente
-            raise ValueError("Sobrenome do cliente invpalido")
+            logging.warning("Sobrenome do cliente invalido")
+            raise ValueError("Sobrenome do cliente invalido")
         
         if not customer.birth_date:
             ## Validação se tem valor para a data de nascimento
+            logging.warning("Data de nascimento invalida")
             raise ValueError("Data de nascimento invalida")
 
         if customer.birth_date> date.today() or customer.birth_date < date(1900, 1, 1):
-            raise ValueError("Data de nascimento inválida!")
+            logging.warning("Data de nascimento invalida!")
+            raise ValueError("Data de nascimento invalida!")
 
         if not customer.email or customer.email.isspace() or "@" not in customer.email:
             ## Validação do email do cliente
-            raise ValueError("Email do cliente inválido")
+            logging.warning("Email do cliente invalido")
+            raise ValueError("Email do cliente invalido")
         
         if not customer.phone or customer.phone.isspace() or len(customer.phone) != 15:
             ## Validação do telefone do cliente
-            raise ValueError("Telefone do cliente inválido")
+            logging.warning("Telefone do cliente invalido")
+            raise ValueError("Telefone do cliente invalido")
         
-        return self.customer_repository.create(customer)
+        try:
+            created = self.customer_repository.create(customer)
+            logging.info(f"Cliente criado com sucesso! ID: {created}")
+            return created
+        except Exception as e:
+            logging.error("Erro ao criar cliente!")
+            raise e
+
+
+    def get_customer_by_id(self, id: int) -> Customer:
+        if not id or id <= 0:
+            logging.warning("ID do cliente invalido")
+            raise ValueError("ID do cliente invalido")
+
+        try:
+            result = self.customer_repository.get_by_id(id)
+            logging.info(f"Cliente encontrado com sucesso! ID: {id}")
+            return result
+        except ValueError as e:
+            logging.warning("Cliente não encontrado!")
+            raise e

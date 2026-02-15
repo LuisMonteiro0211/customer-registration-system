@@ -5,8 +5,10 @@ from typing import List
 class CustomerRepository:
     """
     Repositório de clientes
+    
     Atributos:
         - Nenhum
+
     Métodos:
         - create(customer: Customer) -> int: Salva o cliente e retorna o ID final
         - get_by_id(id: int) -> Customer: Retorna o cliente pelo ID

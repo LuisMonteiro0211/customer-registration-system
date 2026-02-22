@@ -8,3 +8,12 @@ class CreateAddressDTO:
     neighborhood: str
     cep: str
     customer_id: int
+
+@dataclass
+class UpdateAddressDTO:
+    id: int
+    street: str
+    number: str
+    neighborhood: str
+    cep: str
+    customer_id: int

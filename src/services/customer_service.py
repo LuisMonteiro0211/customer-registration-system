@@ -3,7 +3,7 @@ from src.models.customer import Customer
 from src.repositories.customer_repository import CustomerRepository
 from src.dtos.customer_dto import CreateCustomerDTO, UpdateCustomerDTO
 from typing import List
-from src.utils.validators import validade_is_integer, validade_filled_string, validate_email, validate_phone, validate_birth_date
+from src.utils.validators import validate_is_integer, validate_filled_string, validate_email, validate_phone, validate_birth_date
 import logging
 
 class CustomerService:
@@ -29,8 +29,8 @@ class CustomerService:
         Returns:
             int: ID do cliente criado
         """
-        validade_filled_string(customer_dto.first_name)
-        validade_filled_string(customer_dto.last_name)
+        validate_filled_string(customer_dto.first_name)
+        validate_filled_string(customer_dto.last_name)
         validate_birth_date(customer_dto.birth_date)
         validate_email(customer_dto.email)
         validate_phone(customer_dto.phone)
@@ -62,7 +62,7 @@ class CustomerService:
         Returns:
             Customer: Cliente encontrado
         """
-        validade_is_integer(id)
+        validate_is_integer(id)
 
         try:
             result = self.customer_repository.get_by_id(id)
@@ -97,9 +97,9 @@ class CustomerService:
         Returns:
             int: ID do cliente atualizado
         """
-        validade_is_integer(customer_update_dto.id)
-        validade_filled_string(customer_update_dto.first_name)
-        validade_filled_string(customer_update_dto.last_name)
+        validate_is_integer(customer_update_dto.id)
+        validate_filled_string(customer_update_dto.first_name)
+        validate_filled_string(customer_update_dto.last_name)
         validate_birth_date(customer_update_dto.birth_date)
         validate_email(customer_update_dto.email)
         validate_phone(customer_update_dto.phone)
@@ -120,7 +120,7 @@ class CustomerService:
         Returns:
             int: Número de linhas deletadas
         """
-        validade_is_integer(id)
+        validate_is_integer(id)
 
         try:
             deleted = self.customer_repository.delete(id)

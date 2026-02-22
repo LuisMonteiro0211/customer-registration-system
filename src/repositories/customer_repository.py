@@ -79,13 +79,14 @@ class CustomerRepository:
         Args:
             customer: Customer: Cliente a ser atualizado
         Returns:
-            int: ID do cliente atualizado
+            int: Quantidade de linhas afetadas
         """
         with get_connection() as cursor:
             query = """
             UPDATE customer
             SET first_name = %s, last_name = %s, birth_date = %s, email = %s, phone = %s
             WHERE id = %s
+            LIMIT 1
             """
             params = (customer.first_name, customer.last_name, customer.birth_date, customer.email, customer.phone, customer.id)
             cursor.execute(query, params)
@@ -104,6 +105,7 @@ class CustomerRepository:
             query = """
             DELETE FROM customer
             WHERE id = %s
+            LIMIT 1
             """
             params = (id,)
             cursor.execute(query, params)

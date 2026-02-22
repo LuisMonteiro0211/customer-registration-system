@@ -1,32 +1,32 @@
 import logging
 from datetime import date
 
-def validate_id(id: int) -> None:
+def validate_is_integer(value: int) -> None:
     """
-    Valida o ID do cliente
+    Valida se o valor é um número inteiro e maior que 0
     Args:
-        id: int: ID do cliente a ser validado
+        value: int: Valor a ser validado
     Returns:
         None
     """
-    if not isinstance(id, int):
-        logging.warning("ID deve ser um número inteiro")
-        raise ValueError("ID deve ser um número inteiro")
-    if id <= 0:
-        logging.warning("ID deve ser maior que 0")
-        raise ValueError("ID deve ser maior que 0")
+    if not isinstance(value, int):
+        logging.warning("Valor deve ser um número inteiro")
+        raise ValueError("Valor deve ser um número inteiro")
+    if value <= 0:
+        logging.warning("Valor deve ser maior que 0")
+        raise ValueError("Valor deve ser maior que 0")
     
-def validate_name(name: str) -> None:
+def validate_filled_string(value: str) -> None:
     """
-    Valida o nome do cliente
+    Valida se o valor é uma string não vazia e não contém espaços
     Args:
-        name: str: Nome do cliente a ser validado
+        value: str: Valor a ser validado
     Returns:
         None
     """
-    if not name or name.isspace():
-        logging.warning("Nome invalido")
-        raise ValueError("Nome invalido")
+    if not value or value.isspace():
+        logging.warning("Valor invalido")
+        raise ValueError("Valor invalido")
 
 def validate_email(email: str) -> None:
     """

@@ -1,9 +1,3 @@
-# TODO [X]: create_customer(dto) -> Salva o cliente e retorna o ID final
-# TODO: get_customer_by_id(id) -> Chama o repositório para buscar o cliente pelo ID
-# TODO: get_all_customers() -> Chama o repositório para buscar todos os clientes
-# TODO: update_customer(id, dto) -> Atualiza o cliente e retorna o ID final
-# TODO: delete_customer(id) -> Chama o repositório para deletar o cliente pelo ID
-
 from datetime import date
 from src.models.customer import Customer
 from src.repositories.customer_repository import CustomerRepository
@@ -41,14 +35,23 @@ class CustomerService:
         validate_email(customer_dto.email)
         validate_phone(customer_dto.phone)
 
+        customer = Customer(
+            first_name=customer_dto.first_name,
+            last_name=customer_dto.last_name,
+            birth_date=customer_dto.birth_date,
+            email=customer_dto.email,
+            phone=customer_dto.phone,
+            created_at=None,
+            updated_at=None,
+        )
+
         try:
-            created = self.customer_repository.create(customer_dto)
+            created = self.customer_repository.create(customer)
             logging.info(f"Cliente criado com sucesso! ID: {created}")
             return created
         except Exception as e:
             logging.error("Erro ao criar cliente!")
             raise e
-
 
     def get_customer_by_id(self, id: int) -> Customer:
         """

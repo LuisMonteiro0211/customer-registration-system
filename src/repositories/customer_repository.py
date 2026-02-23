@@ -55,7 +55,16 @@ class CustomerRepository:
             if result is None:
                 raise ValueError(f"Cliente com ID {id} não encontrado")
 
-            return Customer(*result)
+            return Customer(
+                first_name=result[1],
+                last_name=result[2],
+                birth_date=result[3],
+                email=result[4],
+                phone=result[5],
+                created_at=result[6],
+                updated_at=result[7],
+                id=result[0]
+            )
 
     def get_all(self) -> List[Customer]:
         """
@@ -71,7 +80,16 @@ class CustomerRepository:
             cursor.execute(query, params)
             results = cursor.fetchall()
 
-            return [Customer(*result) for result in results]
+            return [Customer(
+                first_name=result[1],
+                last_name=result[2],
+                birth_date=result[3],
+                email=result[4],
+                phone=result[5],
+                created_at=result[6],
+                updated_at=result[7],
+                id=result[0]
+            ) for result in results]
 
     def update(self, customer: Customer) -> int:
         """

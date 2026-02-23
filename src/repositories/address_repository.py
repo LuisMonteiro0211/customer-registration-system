@@ -46,7 +46,7 @@ class AddressRepository:
             result = cursor.fetchone()
             if result is None:
                 raise ValueError(f"Endereço com ID {id} não encontrado")
-                
+
             return Address(
                 street=result[1],
                 number=result[2],
@@ -72,7 +72,16 @@ class AddressRepository:
             params = ()
             cursor.execute(query, params)
             results = cursor.fetchall()
-            return [Address(*result) for result in results]
+            return [Address(
+                street=result[1],
+                number=result[2],
+                neighborhood=result[3],
+                cep=result[4],
+                customer_id=result[5],
+                created_at=result[6],
+                updated_at=result[7],
+                id=result[0]
+            ) for result in results]
 
     def update(self, address: Address) -> int:
         """

@@ -2,8 +2,9 @@ from src.models.address import Address
 from src.dtos.address_dto import CreateAddressDTO
 from typing import List
 from src.database.connection import get_connection
+from src.repositories.interfaces.interface_repository import IRepository
 
-class AddressRepository:
+class AddressRepository(IRepository):
     def __init__(self) -> None:
         # Como é uma classe apenas de execução de métodos não precisa de inicialização
         # Tendo em vista que os dados já vem preparados para uso

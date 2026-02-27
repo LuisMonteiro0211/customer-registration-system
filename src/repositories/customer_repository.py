@@ -1,8 +1,9 @@
 from src.models.customer import Customer
 from src.database.connection import get_connection
+from src.repositories.interfaces.interface_repository import IRepository
 
 from typing import List
-class CustomerRepository:
+class CustomerRepository(IRepository):
     """
     Repositório de clientes
     

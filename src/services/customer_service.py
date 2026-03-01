@@ -1,5 +1,6 @@
 from datetime import date
 from src.models.customer import Customer
+from src.repositories.interfaces.interface_customer import ICustomerRepository
 from src.repositories.customer_repository import CustomerRepository
 from src.dtos.customer_dto import CreateCustomerDTO, UpdateCustomerDTO
 from typing import List
@@ -7,7 +8,7 @@ from src.utils.validators import validate_is_integer, validate_filled_string, va
 import logging
 
 class CustomerService:
-    def __init__(self, customer_repository: CustomerRepository):
+    def __init__(self, customer_repository: ICustomerRepository):
         """
         Serviço de clientes
         Atributos:

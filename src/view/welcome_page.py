@@ -1,10 +1,9 @@
 from src.utils.clear_screen import clear_screen
+from src.utils.header import header
 
 def welcome_page() -> int:
     clear_screen()
-    print(f'{"-"*40}')
-    print(f'{"SISTEMA DE CADASTRO DE CLIENTES":^40}')
-    print(f'{"-"*40}')
+    header("SISTEMA DE CADASTRO DE CLIENTES")
     print('- versão 1.0.0')
     print('- by Luis Felipe de Oliveira Monteiro')
     print()

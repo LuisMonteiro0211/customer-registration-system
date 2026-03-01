@@ -104,6 +104,8 @@ class CustomerService:
         validate_email(customer_update_dto.email)
         validate_phone(customer_update_dto.phone)
 
+        #Montar o model do Cliente
+
         try:
             updated = self.customer_repository.update(customer_update_dto)
             logging.info(f"Cliente atualizado com sucesso! ID: {updated}")

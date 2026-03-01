@@ -4,9 +4,9 @@ from src.repositories.interfaces.interface_repository import IRepository
 class ICustomerRepository(IRepository):
 
     @abstractmethod
-    def get_email(self, email: str):
+    def exists_by_email(self, email: str) -> bool:
         pass
 
     @abstractmethod
-    def get_phone(self, phone: str):
+    def exists_by_phone(self, phone: str) -> bool:
         pass

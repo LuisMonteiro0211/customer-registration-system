@@ -129,4 +129,25 @@ class CustomerRepository(ICustomerRepository):
             params = (id,)
             cursor.execute(query, params)
             return cursor.rowcount
-            
+    
+    def exists_by_email(self, email: str) -> bool:
+        with get_connection() as cursor:
+            query = """
+            SELECT email FROM customer
+            WHERE email = %s
+            """
+            params = (email,)
+            cursor.execute(query, params)
+            result = bool(cursor.fetchone())
+            return result
+
+    def exists_by_phone(self, phone: str) -> bool:
+        with get_connection() as cursor:
+            query = """
+            SELECT phone FROM customer
+            WHERE phone = %s
+            """
+            params = (phone,)
+            cursor.execute(query, params)
+            result = bool(cursor.fetchone())
+            return result

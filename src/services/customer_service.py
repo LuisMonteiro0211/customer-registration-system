@@ -1,10 +1,11 @@
 from datetime import date
 from src.models.customer import Customer
+from src.repositories import customer_repository
 from src.repositories.interfaces.interface_customer import ICustomerRepository
 from src.repositories.customer_repository import CustomerRepository
 from src.dtos.customer_dto import CreateCustomerDTO, UpdateCustomerDTO
+from src.utils.validators import validate_is_integer
 from typing import List
-from src.utils.validators import validate_is_integer, validate_filled_string, validate_email, validate_phone, validate_birth_date
 import logging
 
 class CustomerService:
@@ -21,7 +22,16 @@ class CustomerService:
             - delete_customer(id: int) -> int: Deleta um cliente pelo ID
         """
         self.customer_repository = customer_repository # Recebe uma instância do repositório já pronta para uso
-        
+
+    def _validate_customer(self, customer_dto: CreateCustomerDTO) -> None:
+        if self.customer_repository.exists_by_email(customer_dto.email):
+            logging.warning("Email já cadastrado")
+            raise ValueError("Email já cadastrado")
+
+        if self.customer_repository.exists_by_phone(customer_dto.phone):
+            logging.warning("Telefone já cadastrado")
+            raise ValueError("Telefone já cadastrado")  
+
     def create_customer(self, customer_dto: CreateCustomerDTO) -> int:
         """
         Cria um novo cliente
@@ -30,11 +40,7 @@ class CustomerService:
         Returns:
             int: ID do cliente criado
         """
-        validate_filled_string(customer_dto.first_name)
-        validate_filled_string(customer_dto.last_name)
-        validate_birth_date(customer_dto.birth_date)
-        validate_email(customer_dto.email)
-        validate_phone(customer_dto.phone)
+        self._validate_customer(customer_dto)
 
         customer = Customer(
             first_name=customer_dto.first_name,
@@ -98,12 +104,6 @@ class CustomerService:
         Returns:
             int: ID do cliente atualizado
         """
-        validate_is_integer(customer_update_dto.id)
-        validate_filled_string(customer_update_dto.first_name)
-        validate_filled_string(customer_update_dto.last_name)
-        validate_birth_date(customer_update_dto.birth_date)
-        validate_email(customer_update_dto.email)
-        validate_phone(customer_update_dto.phone)
 
         #Montar o model do Cliente
 

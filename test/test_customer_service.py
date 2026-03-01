@@ -4,18 +4,24 @@ from src.dtos.customer_dto import CreateCustomerDTO
 from datetime import date
 from src.repositories.customer_repository import CustomerRepository
 from src.dtos.customer_dto import UpdateCustomerDTO
-class FakeCustomerRepository:
+from src.repositories.interfaces.interface_repository import IRepository
+from src.models.customer import Customer
+from typing import List
+
+class FakeCustomerRepository(IRepository):
     # Criado para não precisar de conexão com o banco de dados
     # Simula o método create do repositório
     def create(self, customer) -> int:
         return 1
+    
+    def get_by_id(self, id: int):
+        return Customer(id=1, first_name="João", last_name="Silva", birth_date=date(1990, 1, 1), email="joao.silva@example.com", phone="(11) 99999-9999")
+
+    def get_all(self) -> List[Customer]:
+        return [Customer(id=1, first_name="João", last_name="Silva", birth_date=date(1990, 1, 1), email="joao.silva@example.com", phone="(11) 99999-9999")]
 
     def update(self, customer) -> int:
         return 1
-
-    def delete(self, id: int) -> int:
-        return 1
-
 customer_service = CustomerService(FakeCustomerRepository())
 
 def test_create_customer_success():

@@ -1,10 +1,19 @@
 import pytest
 from src.services.address_service import AddressService
 from src.dtos.address_dto import CreateAddressDTO, UpdateAddressDTO
+from src.repositories.interfaces.interface_repository import IRepository
+from src.models.address import Address
+from typing import List
 
-class FakeAddressRepository:
+class FakeAddressRepository(IRepository):
     def create(self, address) -> int:
         return 1
+    
+    def get_by_id(self, id: int):
+        return Address(id=1, street="Rua das Flores", number="123", neighborhood="Centro", cep="01001-000", customer_id=1)
+
+    def get_all(self) -> List[Address]:
+        return [Address(id=1, street="Rua das Flores", number="123", neighborhood="Centro", cep="01001-000", customer_id=1)]
 
     def update(self, address) -> int:
         return 1

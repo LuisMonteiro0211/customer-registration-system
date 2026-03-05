@@ -4,7 +4,8 @@ from src.repositories import customer_repository
 from src.repositories.interfaces.interface_customer import ICustomerRepository
 from src.repositories.customer_repository import CustomerRepository
 from src.dtos.customer_dto import CreateCustomerDTO, UpdateCustomerDTO
-from src.utils.validators import validate_is_integer
+from src.utils.formatters import convert_to_br_date, convert_to_us_date
+from src.utils.validators import validate_is_integer, validate_email, validate_phone, validate_birth_date
 from typing import List
 import logging
 
@@ -24,17 +25,24 @@ class CustomerService:
         self.customer_repository = customer_repository # Recebe uma instância do repositório já pronta para uso
 
     def _validate_customer(self, customer_dto: CreateCustomerDTO) -> None:
+        """
+        
+        """
+
         if self.customer_repository.exists_by_email(customer_dto.email):
             logging.warning("Email já cadastrado")
             raise ValueError("Email já cadastrado")
 
         if self.customer_repository.exists_by_phone(customer_dto.phone):
             logging.warning("Telefone já cadastrado")
-            raise ValueError("Telefone já cadastrado")  
+            raise ValueError("Telefone já cadastrado")
+        
+        validate_birth_date(customer_dto.birth_date)
 
     def create_customer(self, customer_dto: CreateCustomerDTO) -> int:
         """
         Cria um novo cliente
+
         Args:
             customer_dto: CreateCustomerDTO: DTO de criação de cliente
         Returns:

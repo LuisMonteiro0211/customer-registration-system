@@ -1,6 +1,6 @@
 from src.utils.clear_screen import clear_screen
 from src.utils.header import header
-from typing import Tuple, List
+from typing import Dict, List
 from src.models.customer import Customer
 
 UPDATE_CUSTOMER_OPTIONS = {
@@ -18,10 +18,10 @@ def customer_view() -> str:
     print("[3] - Atualizar Cliente")
     print("[4] - Deletar Cliente")
     print("[5] - Sair")
-    input_option = int(input("Digite a opção desejada: "))
+    input_option = input("Digite a opção desejada: ")
     return input_option
 
-def create_customer() -> Tuple[str, str, str, str, str]:
+def create_customer() -> Dict[str, str]:
     header("Cadastrar Cliente")
 
     first_name = input("Digite o nome do cliente: ")
@@ -30,7 +30,13 @@ def create_customer() -> Tuple[str, str, str, str, str]:
     email = input("Digite o email do cliente: ")
     phone = input("Digite o telefone do cliente: ")
 
-    customer: Tuple[str, str, str, str, str] = (first_name, last_name, birth_date, email, phone)
+    customer: Dict[str, str] = {
+        "first_name": first_name,
+        "last_name": last_name,
+        "birth_date": birth_date,
+        "email": email,
+        "phone": phone
+    }
 
     return customer
 

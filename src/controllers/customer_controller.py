@@ -8,7 +8,7 @@ class CustomerController:
     def __init__(self, customer_service: CustomerService):
         self.customer_service = customer_service
 
-    def _create_customer(self, customer_info: dict) -> None:
+    def create_customer(self, customer_info: dict) -> int:
         #Validações básicos se os dados estão preenchidos e dentro do padrão
         #Função básica do controller: Validar os dados montar a DTO e chamar o service
 
@@ -34,15 +34,6 @@ class CustomerController:
             email=customer_info["email"],
             phone=phone_formatter
         )
-        self.customer_service.create_customer(customer_dto)
-
-    def run(self):
-        while True:
-            try:
-                option = customer_view()
-                option = int(option)
-                break
-            except ValueError as e:
-                print(f"Favor digitar um número válido: {e}")
-                continue
+        result = self.customer_service.create_customer(customer_dto)
+        return result
         

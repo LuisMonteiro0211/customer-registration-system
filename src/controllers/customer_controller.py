@@ -8,8 +8,7 @@ class CustomerController:
     def __init__(self, customer_service: CustomerService):
         self.customer_service = customer_service
 
-    def _create_customer(self) -> None:
-        customer_info = create_customer()
+    def _create_customer(self, customer_info: dict) -> None:
         #Validações básicos se os dados estão preenchidos e dentro do padrão
         #Função básica do controller: Validar os dados montar a DTO e chamar o service
 

@@ -1,85 +1,74 @@
-from src.utils.clear_screen import clear_screen
-from src.utils.header import header
+from src.utils.header import header, clear_screen
 from typing import Dict, List
 from src.models.customer import Customer
+from time import sleep
 
-UPDATE_CUSTOMER_OPTIONS = {
-    "1": "NOME",
-    "2": "SOBRENOME",
-    "3": "DATA DE NASCIMENTO",
-    "4": "EMAIL",
-    "5": "TELEFONE"
-}
+def show_error(message: str) -> None:
+    clear_screen()
+    print(f"\033[91mErro: {message}\033[0m")
+    sleep(3)
 
-def customer_view() -> str:
+def customer_menu():
     header("Opções de Clientes")
     print("[1] - Cadastrar Cliente")
-    print("[2] - Opções de Buscas")
+    print("[2] - Listar Clientes")
     print("[3] - Atualizar Cliente")
     print("[4] - Deletar Cliente")
     print("[5] - Sair")
-    input_option = input("Digite a opção desejada: ")
-    return input_option
 
-def create_customer() -> Dict[str, str]:
-    header("Cadastrar Cliente")
 
-    first_name = input("Digite o nome do cliente: ")
-    last_name = input("Digite o sobrenome do cliente: ")
-    birth_date = input("Digite a data de nascimento do cliente: ")
-    email = input("Digite o email do cliente: ")
-    phone = input("Digite o telefone do cliente: ")
+def get_option_menu() -> str:
+    while True:
+        customer_menu()
+        input_option = input("Digite a opção desejada: ")
 
-    customer: Dict[str, str] = {
-        "first_name": first_name,
-        "last_name": last_name,
-        "birth_date": birth_date,
-        "email": email,
-        "phone": phone
+        try:
+            int_option = int(input_option)
+            if 1 <= int_option <= 5:
+                return input_option
+            else:
+                show_error("Favor digitar uma opção válida entre 1 e 5")
+        except ValueError as e:
+            show_error(f"Favor digitar um número inteiro: {e}")
+
+
+def create_customer_form() -> Dict[str, str]:
+    header("Cadastro de Cliente")
+    customer_info: Dict[str, str] = {
+        "first_name": input("Digite o nome do cliente: "),
+        "last_name": input("Digite o sobrenome do cliente: "),
+        "birth_date": input("Digite a data de nascimento do cliente: "),
+        "email": input("Digite o email do cliente: "),
+        "phone": input("Digite o telefone do cliente: "),
     }
+    return customer_info
 
-    return customer
+def get_id_form() -> str:
+    while True:
+        header("Busca de Cliente por ID")
+        id_customer = input("Digite o ID do cliente: ")
 
-def search_customer() -> str:
-    header("Opções de Buscas")
-    print("[1] - Buscar Cliente por ID")
-    print("[2] - Buscar todos os Clientes")
-    input_option = input("Digite a opção desejada: ")
+        try:
+            id_customer_int = int(id_customer)
+            if id_customer_int > 0: return id_customer
+            else: show_error("Favor digitar um ID maior que 0")
 
-    return input_option
+        except ValueError as e:
+            show_error(f"Favor digitar um número inteiro: {e}")
 
-def get_customer_by_id() -> str:
-    header("Buscar Cliente por ID")
-    id = input("Digite o ID do cliente: ")
-    return id
+def show_customer(customer: Customer) -> None:
+    print(f"ID: {customer.id}")
+    print(f"Nome: {customer.first_name} {customer.last_name}")
+    print(f"Data de Nascimento: {customer.birth_date}")
+    print(f"Email: {customer.email}")
+    print(f"Telefone: {customer.phone}")
+    print(f"Data de Criação: {customer.created_at}")
+    print(f"Data de Atualização: {customer.updated_at}")
+    print("--------------------------------")
 
-def get_all_customers(list_customers: List[Customer]) -> str:
-    header("Buscar todos os Clientes")
-    for customer in list_customers:
-        print(f"ID: {customer.id}, Nome: {customer.first_name} {customer.last_name}, Data de Nascimento: {customer.birth_date}, Email: {customer.email}, Telefone: {customer.phone}")
-
-def menu_update_customer() -> str:
-    header("Atualizar Cliente")
-    print("Informe um campo para atualizar: ")
-    print("[1] - Nome")
-    print("[2] - Sobrenome")
-    print("[3] - Data de Nascimento")
-    print("[4] - Email")
-    print("[5] - Telefone")
-    input_option = input("Digite a opção desejada: ")
-    return input_option
-
-def update_customer(option: str,old_value: str) -> str:
-    header("Atualizar Cliente")
-    print(f"O valor atual do campo {UPDATE_CUSTOMER_OPTIONS[option]} é: {old_value}")
-    print(f"Informe um novo valor para o campo {UPDATE_CUSTOMER_OPTIONS[option]}: ")
-    new_value = input("Digite o novo valor: ")
-    return new_value
-
-def delete_customer() -> str:
-    header("Deletar Cliente")
-    id = input("Digite o ID do cliente: ")
-    return id
+def show_all_customers(customers: List[Customer]) -> None:
+    for customer in customers:
+        show_customer(customer)
 
 if __name__ == "__main__":
-    pass
+    create_customer_form()

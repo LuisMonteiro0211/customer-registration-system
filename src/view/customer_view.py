@@ -8,13 +8,19 @@ def show_error(message: str) -> None:
     print(f"\033[91mErro: {message}\033[0m")
     sleep(3)
 
+def show_success(message: str) -> None:
+    clear_screen()
+    print(f"\033[92mSucesso: {message}\033[0m")
+    sleep(3)
+
 def customer_menu():
     header("Opções de Clientes")
     print("[1] - Cadastrar Cliente")
     print("[2] - Listar Clientes")
-    print("[3] - Atualizar Cliente")
-    print("[4] - Deletar Cliente")
-    print("[5] - Sair")
+    print("[3] - Listar Cliente por ID")
+    print("[4] - Atualizar Cliente")
+    print("[5] - Deletar Cliente")
+    print("[6] - Sair")
 
 
 def get_option_menu() -> str:
@@ -24,10 +30,10 @@ def get_option_menu() -> str:
 
         try:
             int_option = int(input_option)
-            if 1 <= int_option <= 5:
+            if 1 <= int_option <= 6:
                 return input_option
             else:
-                show_error("Favor digitar uma opção válida entre 1 e 5")
+                show_error("Favor digitar uma opção válida entre 1 e 6")
         except ValueError as e:
             show_error(f"Favor digitar um número inteiro: {e}")
 

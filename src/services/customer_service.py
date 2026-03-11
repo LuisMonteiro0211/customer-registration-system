@@ -28,7 +28,7 @@ class CustomerService:
         """
         
         """
-
+        
         if self.customer_repository.exists_by_email(customer_dto.email):
             logging.warning("Email já cadastrado")
             raise ValueError("Email já cadastrado")
@@ -60,13 +60,9 @@ class CustomerService:
             updated_at=None,
         )
 
-        try:
-            created = self.customer_repository.create(customer)
-            logging.info(f"Cliente criado com sucesso! ID: {created}")
-            return created
-        except Exception as e:
-            logging.error("Erro ao criar cliente!")
-            raise e
+        result = self.customer_repository.create(customer)
+        logging.info(f"Cliente criado com sucesso! ID: {result}")
+        return result
 
     def get_customer_by_id(self, id: int) -> Customer:
         """
@@ -79,13 +75,10 @@ class CustomerService:
         """
         validate_is_integer(id)
 
-        try:
-            result = self.customer_repository.get_by_id(id)
-            logging.info(f"Cliente encontrado com sucesso! ID: {id}")
-            return result
-        except ValueError as e:
-            logging.warning("Cliente não encontrado!")
-            raise e
+        result = self.customer_repository.get_by_id(id)
+        logging.info(f"Cliente encontrado com sucesso! ID: {id}")
+        return result
+
 
     def get_all_customers(self) -> List[Customer]:
         """
@@ -95,14 +88,13 @@ class CustomerService:
             Nenhum
         Returns:
             List[Customer]: Lista com todos os clientes
+
+        Raises:
+            ValueError: Se não houver clientes cadastrados
         """
-        try:
-            result = self.customer_repository.get_all()
-            logging.info(f"{len(result)} Clientes encontrados com sucesso!")
-            return result
-        except Exception as e:
-            logging.error("Erro ao buscar clientes!")
-            raise e
+        result = self.customer_repository.get_all()
+        logging.info(f"{len(result)} Clientes encontrados com sucesso!")
+        return result
 
     def update_customer(self,customer_update_dto: UpdateCustomerDTO) -> int:
         """
@@ -115,13 +107,9 @@ class CustomerService:
 
         #Montar o model do Cliente
 
-        try:
-            updated = self.customer_repository.update(customer_update_dto)
-            logging.info(f"Cliente atualizado com sucesso! ID: {updated}")
-            return updated
-        except Exception as e:
-            logging.error("Erro ao atualizar cliente!")
-            raise e
+        result = self.customer_repository.update(customer_update_dto)
+        logging.info(f"Cliente atualizado com sucesso! ID: {result}")
+        return result
     
     def delete_customer(self, id: int) -> int:
         """
@@ -133,10 +121,6 @@ class CustomerService:
         """
         validate_is_integer(id)
 
-        try:
-            deleted = self.customer_repository.delete(id)
-            logging.info(f"Cliente deletado com sucesso! ID: {id}")
-            return deleted
-        except Exception as e:
-            logging.error("Erro ao deletar cliente!")
-            raise e
+        result = self.customer_repository.delete(id)
+        logging.info(f"Cliente deletado com sucesso! ID: {id}")
+        return result

@@ -44,6 +44,9 @@ class CustomerRepository(ICustomerRepository):
             id: int: ID do cliente a ser retornado
         Returns:
             Customer: Cliente encontrado
+            
+        Raises:
+            ValueError: Se o cliente não for encontrado
         """
         with get_connection() as cursor:
             query = """
@@ -70,8 +73,12 @@ class CustomerRepository(ICustomerRepository):
     def get_all(self) -> List[Customer]:
         """
         Retorna lista com todos os clientes
+
         Returns:
             List[Customer]: Lista com todos os clientes
+
+        Raises:
+            ValueError: Se não houver clientes cadastrados
         """
         with get_connection() as cursor:
             query = """
@@ -80,6 +87,9 @@ class CustomerRepository(ICustomerRepository):
             params = ()
             cursor.execute(query, params)
             results = cursor.fetchall()
+            
+            if len(results) == 0:
+                raise ValueError("Sem clientes cadastrados")
 
             return [Customer(
                 first_name=result[1],

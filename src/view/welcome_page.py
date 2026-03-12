@@ -10,6 +10,7 @@ def welcome_page() -> int:
     print(f'Menu:')
     print("[1] - Opções de Clientes\n[2] - Opções de Endereços\n[3] - Sair")
     input_option = int(input("Digite a opção desejada: "))
+    return input_option
 
 
 

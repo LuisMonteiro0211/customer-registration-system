@@ -49,10 +49,7 @@ class CustomerRepository(ICustomerRepository):
             ValueError: Se o cliente não for encontrado
         """
         with get_connection() as cursor:
-            query = """
-            SELECT * FROM customer
-            WHERE id = %s
-            """
+            query = "SELECT * FROM customer WHERE id = %s"
             params = (id,)
             cursor.execute(query, params)
             result = cursor.fetchone()

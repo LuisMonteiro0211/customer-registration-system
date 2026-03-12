@@ -2,16 +2,7 @@ from src.utils.header import header, clear_screen
 from typing import Dict, List
 from src.models.customer import Customer
 from time import sleep
-
-def show_error(message: str) -> None:
-    clear_screen()
-    print(f"\033[91mErro: {message}\033[0m")
-    sleep(3)
-
-def show_success(message: str) -> None:
-    clear_screen()
-    print(f"\033[92mSucesso: {message}\033[0m")
-    sleep(3)
+from src.view.suport import show_error, show_success
 
 def customer_menu():
     header("Opções de Clientes")

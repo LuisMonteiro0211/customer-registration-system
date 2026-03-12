@@ -1,5 +1,4 @@
-from this import d
-from src.view.customer_view import show_error
+from src.view.suport import show_error, show_success, new_interaction
 from src.services.customer_service import CustomerService
 from src.dtos.customer_dto import CreateCustomerDTO
 from src.utils.validators import validate_filled_string, validate_email, validate_phone, validate_date_format
@@ -8,23 +7,26 @@ from src.utils.formatters import convert_to_us_date, format_phone_br
 class CustomerController:
     def __init__(self, customer_service: CustomerService):
         self.customer_service = customer_service
+        self.menu_options = {
+            "1": self._create_customer,
+            "2": self._list_all_customers,
+            "3": self._list_customer_by_id,
+            "5": self._delete_customer,
+        }
 
     def handle_menu(self):
-        from src.view.customer_view import customer_menu
+        from src.view.customer_view import get_option_menu
         while True:
-            option = customer_menu()
-            if option == "1":
-                self._create_customer()
-            elif option == "2":
-                self._list_all_customers()
-            elif option == "3":
-                self._list_customer_by_id()
-            elif option == "4":
-                self._update_customer()
-            elif option == "5":
-                self._delete_customer()
-            elif option == "6":
+            option = get_option_menu()
+
+            if option == "6":
                 break
+                
+            action = self.menu_options.get(option)
+            if action:
+                action()
+                if not new_interaction("Deseja realizar outra ação? [S/N]"):
+                    break
 
     def _create_customer(self) -> int:
         from src.view.customer_view import create_customer_form

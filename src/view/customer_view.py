@@ -3,6 +3,7 @@ from typing import Dict, List
 from src.models.customer import Customer
 from time import sleep
 from src.view.suport import show_error, show_success
+from src.utils.validators import validate_is_integer
 
 def customer_menu():
     header("Opções de Clientes")
@@ -46,12 +47,11 @@ def get_id_form() -> str:
         id_customer = input("Digite o ID do cliente: ")
 
         try:
+            validate_is_integer(id_customer)
             id_customer_int = int(id_customer)
-            if id_customer_int > 0: return id_customer
-            else: show_error("Favor digitar um ID maior que 0")
-
+            return id_customer_int
         except ValueError as e:
-            show_error(f"Favor digitar um número inteiro: {e}")
+            show_error(f"{e}")
 
 def show_customer(customer: Customer) -> None:
     print(f"ID: {customer.id}")

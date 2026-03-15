@@ -1,44 +1,178 @@
+from unittest.mock import patch
 from src.controllers.customer_controller import CustomerController
-from src.services.customer_service import CustomerService
-from src.repositories.interfaces.interface_customer import ICustomerRepository 
 from src.models.customer import Customer
-from typing import List, Dict
+from typing import List
 from src.dtos.customer_dto import CreateCustomerDTO
-from datetime import date
 
-class FakeCustomerService():
+class FakeService:
+    def create_customer(self, customer_dto: CreateCustomerDTO):
+        return 1
+    
+    def get_all_customers(self):
+        lista: List[Customer] = []
+        return lista
 
-    def create_customer(self, entity) -> int:
+    def get_customer_by_id(self):
+        return Customer
+
+    def delete_customer(self):
         return 1
 
-    def get_customer_by_id(self, id: int):
-        return None
-
-    def get_all_customers(self) -> List[Customer]:
-        return []
-
-    def update_customer(self, entity) -> int:
-        return 1
-
-    def delete_customer(self, id: int) -> int:
-        return 1
-
-    def exists_by_email(self, email: str) -> bool:
-        return False
-
-    def exists_by_phone(self, phone: str) -> bool:
-        return False
-
-customer_service = FakeCustomerService()
-customer_controller = CustomerController(customer_service)
+fake_customer_service = FakeService()
+customer_controller = CustomerController(fake_customer_service)
 
 def test_create_customer_success():
-    customer_info: Dict[str, str] = {
-        "first_name": "João",
-        "last_name": "Silva",
-        "birth_date": "01/01/1990",
-        "email": "joao.silva@example.com",
-        "phone": "16992949652"
-    }
-    customer_created = customer_controller.create_customer(customer_info)
-    assert customer_created > 0
+    with patch("src.view.customer_view.create_customer_form") as mock_view:
+        mock_view.return_value = {
+            "first_name": "John",
+            "last_name": "Doe",
+            "birth_date": "02/01/2004",
+            "email": "john.doe@example.com",
+            "phone": "16992949652"
+        }
+        result = customer_controller._create_customer()
+
+    assert result == 1
+
+def test_create_customer_invalid_name():
+    with patch("src.view.customer_view.create_customer_form") as mock_view, \
+         patch("src.controllers.customer_controller.show_error") as mock_error:
+
+        mock_view.return_value = {
+            "first_name": "",
+            "last_name": "Doe",
+            "birth_date": "02/01/2004",
+            "email": "john.doe@example.com",
+            "phone": "16992949652"
+        }
+        result = customer_controller._create_customer()
+        mock_error.assert_called_once()
+        assert result == None
+
+def test_create_customer_invalid_last_name():
+    with patch("src.view.customer_view.create_customer_form") as mock_view, \
+         patch("src.controllers.customer_controller.show_error") as mock_error:
+
+        mock_view.return_value = {
+            "first_name": "John",
+            "last_name": "",
+            "birth_date": "02/01/2004",
+            "email": "john.doe@example.com",
+            "phone": "16992949652"
+        }
+
+        result = customer_controller._create_customer()
+        mock_error.assert_called_once()
+        assert result == None
+
+def test_create_customer_invalid_birth_date():
+    with patch("src.view.customer_view.create_customer_form") as mock_view, \
+         patch("src.controllers.customer_controller.show_error") as mock_error:
+
+        mock_view.return_value = {
+            "first_name": "John",
+            "last_name": "Doe",
+            "birth_date": "2004/01/02",
+            "email": "john.doe@example.com",
+            "phone": "16992949652"
+        }
+
+        result = customer_controller._create_customer()
+        mock_error.assert_called_once()
+        assert result == None
+
+def test_invalid_birth_date_str_eua():
+    with patch("src.view.customer_view.create_customer_form") as mock_view, \
+         patch("src.controllers.customer_controller.show_error") as mock_error:
+
+        mock_view.return_value = {
+            "first_name": "John",
+            "last_name": "Doe",
+            "birth_date": "2004-01-02",
+            "email": "john.doe@example.com",
+            "phone": "16992949652"
+        }
+
+        result = customer_controller._create_customer()
+        mock_error.assert_called_once()
+        assert result == None
+
+def test_invalid_birth_date_number_join():
+    with patch("src.view.customer_view.create_customer_form") as mock_view, \
+         patch("src.controllers.customer_controller.show_error") as mock_error:
+
+        mock_view.return_value = {
+            "first_name": "John",
+            "last_name": "Doe",
+            "birth_date": "20040102",
+            "email": "john.doe@example.com",
+            "phone": "16992949652"
+        }
+
+        result = customer_controller._create_customer()
+        mock_error.assert_called_once()
+        assert result == None
+
+def test_create_customer_invalid_email():
+    with patch("src.view.customer_view.create_customer_form") as mock_view, \
+         patch("src.controllers.customer_controller.show_error") as mock_error:
+
+        mock_view.return_value = {
+            "first_name": "John",
+            "last_name": "Doe",
+            "birth_date": "02/01/2004",
+            "email": "john.doe.example.com",
+            "phone": "16992949652"
+        }
+
+        result = customer_controller._create_customer()
+        mock_error.assert_called_once() 
+        assert result == None
+
+def test_create_customer_invalid_phone():
+    with patch("src.view.customer_view.create_customer_form") as mock_view, \
+         patch("src.controllers.customer_controller.show_error") as mock_error:
+
+        mock_view.return_value = {
+            "first_name": "John",
+            "last_name": "Doe",
+            "birth_date": "02/01/2004",
+            "email": "john.doe@example.com",
+            "phone": "+55(16)992949652"
+        }
+
+        result = customer_controller._create_customer()
+        mock_error.assert_called_once()
+        assert result == None
+
+def test_create_customer_invalid_email():
+    with patch("src.view.customer_view.create_customer_form") as mock_view, \
+         patch("src.controllers.customer_controller.show_error") as mock_error:
+
+        mock_view.return_value = {
+            "first_name": "John",
+            "last_name": "Doe",
+            "birth_date": "02/01/2004",
+            "email": "",
+            "phone": "16992949652"
+        }
+
+        result = customer_controller._create_customer()
+        mock_error.assert_called_once()
+        assert result == None
+
+def test_create_customer_invalid_phone_empty():
+    with patch("src.view.customer_view.create_customer_form") as mock_view, \
+         patch("src.controllers.customer_controller.show_error") as mock_error:
+
+        mock_view.return_value = {
+            "first_name": "John",
+            "last_name": "Doe",
+            "birth_date": "02/01/2004",
+            "email": "john.doe@example.com",
+            "phone": ""
+        }
+
+        result = customer_controller._create_customer()
+        mock_error.assert_called_once()
+        assert result == None

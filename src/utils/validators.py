@@ -14,7 +14,7 @@ def validate_is_integer(value: int) -> None:
     """
     if not isinstance(value, int):
         logging.warning("Valor deve ser um número inteiro")
-        raise ValueError("Valor deve ser um número inteiro")
+        raise ValueError("Valor deve ser um número")
     if value <= 0:
         logging.warning("Valor deve ser maior que 0")
         raise ValueError("Valor deve ser maior que 0")

@@ -1,7 +1,7 @@
 from src.view.suport import show_error, show_success, new_interaction
 from src.services.customer_service import CustomerService
 from src.dtos.customer_dto import CreateCustomerDTO
-from src.utils.validators import validate_filled_string, validate_email, validate_phone, validate_date_format
+from src.utils.validators import validate_filled_string, validate_email, validate_phone, validate_date_format, validate_is_integer
 from src.utils.formatters import convert_to_us_date, format_phone_br
 
 class CustomerController:

@@ -29,9 +29,7 @@ class CustomerRepository(ICustomerRepository):
             int: ID do cliente salvo
         """
         with get_connection() as cursor:
-            query = """
-            INSERT INTO customer (first_name, last_name, birth_date, email, phone)
-            VALUES (%s, %s, %s, %s, %s)
+            query = """INSERT INTO customer (first_name, last_name, birth_date, email, phone) VALUES (%s, %s, %s, %s, %s)
             """
             params = (customer.first_name, customer.last_name, customer.birth_date, customer.email, customer.phone)
             cursor.execute(query, params)
@@ -78,9 +76,7 @@ class CustomerRepository(ICustomerRepository):
             ValueError: Se não houver clientes cadastrados
         """
         with get_connection() as cursor:
-            query = """
-            SELECT * FROM customer
-            """
+            query = """SELECT * FROM customer"""
             params = ()
             cursor.execute(query, params)
             results = cursor.fetchall()
@@ -128,21 +124,14 @@ class CustomerRepository(ICustomerRepository):
             int: Número de linhas deletadas
         """
         with get_connection() as cursor:
-            query = """
-            DELETE FROM customer
-            WHERE id = %s
-            LIMIT 1
-            """
+            query = """DELETE FROM customer WHERE id = %s LIMIT 1"""
             params = (id,)
             cursor.execute(query, params)
             return cursor.rowcount
     
     def exists_by_email(self, email: str) -> bool:
         with get_connection() as cursor:
-            query = """
-            SELECT email FROM customer
-            WHERE email = %s
-            """
+            query = """SELECT email FROM customer WHERE email = %s"""
             params = (email,)
             cursor.execute(query, params)
             result = bool(cursor.fetchone())
@@ -150,10 +139,7 @@ class CustomerRepository(ICustomerRepository):
 
     def exists_by_phone(self, phone: str) -> bool:
         with get_connection() as cursor:
-            query = """
-            SELECT phone FROM customer
-            WHERE phone = %s
-            """
+            query = """SELECT phone FROM customer WHERE phone = %s"""
             params = (phone,)
             cursor.execute(query, params)
             result = bool(cursor.fetchone())

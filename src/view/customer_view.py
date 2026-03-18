@@ -4,6 +4,8 @@ from src.models.customer import Customer
 from time import sleep
 from src.view.suport import show_error, show_success
 from src.utils.validators import validate_is_integer
+from src.utils.object_to_table import customers_to_table_data
+from src.utils.table_formatter import render_table
 
 def customer_menu():
     header("Opções de Clientes")
@@ -54,6 +56,7 @@ def get_id_form() -> str:
             show_error(f"{e}")
 
 def show_customer(customer: Customer) -> None:
+    header("Cliente")
     print(f"ID: {customer.id}")
     print(f"Nome: {customer.first_name} {customer.last_name}")
     print(f"Data de Nascimento: {customer.birth_date}")
@@ -64,8 +67,11 @@ def show_customer(customer: Customer) -> None:
     print("--------------------------------")
 
 def show_all_customers(customers: List[Customer]) -> None:
-    for customer in customers:
-        show_customer(customer)
+    header("Clientes Cadastrados")
+
+    HEADERS = ["ID", "Nome", "Sobrenome", "Email", "Telefone"]
+    DATAS = customers_to_table_data(customers) #Converte a lista de clientes (Objetos) para uma lista de listas (Tabela)
+    render_table(HEADERS, DATAS) #Exibe a tabela com os dados
 
 if __name__ == "__main__":
     create_customer_form()

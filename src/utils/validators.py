@@ -21,7 +21,8 @@ def validate_is_integer(value: int) -> None:
     
 def validate_filled_string(value: str, message: str) -> None:
     """
-    Valida se o valor é uma string não vazia e não contém espaços
+    Valida se o valor é uma string não vazia e não contém somente espaços
+
     Args:
         value: str: Valor a ser validado
     Returns:
@@ -29,7 +30,7 @@ def validate_filled_string(value: str, message: str) -> None:
     """
     if not value or value.isspace():
         logging.warning(message)
-        raise ValueError(message.upper)
+        raise ValueError(message.upper())
 
 def validate_email(email: str) -> None:
     """
@@ -52,6 +53,7 @@ def validate_phone(phone: str) -> None:
 
     Args:
         phone: str: Telefone do cliente a ser validado
+        Deve conter até 11 dígitos e começar com +
     Returns:
         None
     """
@@ -61,6 +63,10 @@ def validate_phone(phone: str) -> None:
         digits = phone[1:]
     else:
         digits = phone
+
+    if len(digits) > 11:
+        logging.warning("Telefone deve conter até 11 dígitos")
+        raise ValueError("Telefone deve conter até 11 dígitos")
 
     if not all([c.isdigit() for c in digits]):
         logging.warning("Telefone deve conter apenas números (ou + no início)")

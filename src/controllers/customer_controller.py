@@ -1,7 +1,8 @@
-from src.view.suport import show_error, show_success, new_interaction
+from src.view.suport import show_error, show_success, new_interaction, clear_lines
+from time import sleep
 from src.services.customer_service import CustomerService
-from src.dtos.customer_dto import CreateCustomerDTO
-from src.utils.validators import validate_filled_string, validate_email, validate_phone, validate_date_format, validate_is_integer
+from src.dtos.customer_dto import CreateCustomerDTO, UpdateCustomerDTO
+from src.utils.validators import validate_filled_string, validate_email, validate_phone, validate_date_format
 from src.utils.formatters import convert_to_us_date, format_phone_br
 
 class CustomerController:
@@ -11,13 +12,16 @@ class CustomerController:
             "1": self._create_customer,
             "2": self._list_all_customers,
             "3": self._list_customer_by_id,
+            "4": self._update_customer,
             "5": self._delete_customer,
         }
 
     def handle_menu(self):
         from src.view.customer_view import get_option_menu
+        from src.view.customer_view import customer_menu
+
         while True:
-            option = get_option_menu()
+            option = get_option_menu(1, 6, customer_menu)
 
             if option == "6":
                 break
@@ -33,6 +37,7 @@ class CustomerController:
         customer_info = create_customer_form()
 
         try:
+            # Teste de validação de dados - Try para capturar os erros de validação
             validate_filled_string(customer_info["first_name"], "Nome deve ser preenchido")
             validate_filled_string(customer_info["last_name"], "Sobrenome deve ser preenchido")
             validate_date_format(customer_info["birth_date"])
@@ -55,6 +60,7 @@ class CustomerController:
             phone=phone_formatter
         )
         try:
+            # Try para capturar erros no processamento do serviço - Banco Serviço - Repositório
             result = self.customer_service.create_customer(customer_dto)
             return result
         except Exception as e:
@@ -78,6 +84,61 @@ class CustomerController:
             show_customer(customer)
         except Exception as e:
             show_error(f"Erro ao listar cliente: {e}")
+
+    def _update_customer(self) -> None:
+        from src.view.customer_view import get_id_form
+        from src.view.customer_view import get_option_menu
+        from src.view.customer_view import show_customer
+        from src.view.customer_view import update_menu
+
+        LIST_ACTIONS = {
+            "3": validate_date_format,
+            "4": validate_email,
+            "5": validate_phone,
+        }
+
+        id_customer_to_update = get_id_form()
+
+        try:
+            customer_to_update = self.customer_service.get_customer_by_id(id_customer_to_update)
+        except Exception as e:
+            show_error(f"Erro ao buscar cliente: {e}")
+            return
+
+        list_fields_to_update = []
+
+        while True:
+            show_customer(customer_to_update)
+            field_to_update = get_option_menu(1, 6, update_menu)
+
+            while True:
+                value_to_update = input("Digite um novo valor para o campo: ")
+
+                try:
+                    validate_filled_string(value_to_update, f"O campo deve ser preenchido com um valor válido")
+
+                    action = LIST_ACTIONS.get(field_to_update)
+                    if action:
+                        action(value_to_update)
+                    break
+                except ValueError as e:
+                    clear_lines(1)
+                    print(f"\033[91mErro: {e}\033[0m")
+                    sleep(2)
+                    clear_lines(1)
+
+            list_fields_to_update.append((field_to_update, value_to_update))
+
+            if not new_interaction("Deseja atualizar outro campo? [S/N]"):
+                break
+
+        customer_update_dto = UpdateCustomerDTO(list_fields=list_fields_to_update)
+
+        try:
+            result = self.customer_service.update_customer(customer_update_dto)
+            show_success(f"Cliente atualizado com sucesso, foi afetado {result} linhas")
+        except Exception as e:
+            show_error(f"Erro ao atualizar cliente: {e}")
 
     def _delete_customer(self) -> None:
         from src.view.customer_view import get_id_form

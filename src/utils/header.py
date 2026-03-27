@@ -1,5 +1,3 @@
-from src.utils.clear_screen import clear_screen
-
 def header(message: str) -> None:
     """
     Exibe um cabeçalho com uma mensagem centralizada
@@ -8,7 +6,6 @@ def header(message: str) -> None:
     Returns:
         None
     """
-    clear_screen()
     print(f'{"-"*40}')
     print(f'{message:^40}')
     print(f'{"-"*40}')

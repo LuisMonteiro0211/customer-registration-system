@@ -1,13 +1,14 @@
-from src.utils.header import header, clear_screen
-from typing import Dict, List
+from src.utils.header import header
+from src.utils.clear_screen import clear_screen
+from typing import Dict, List, Callable
 from src.models.customer import Customer
 from time import sleep
-from src.view.suport import show_error, show_success
-from src.utils.validators import validate_is_integer
+from src.view.suport import show_error, show_success, clear_lines
 from src.utils.object_to_table import customers_to_table_data
 from src.utils.table_formatter import render_table
 
 def customer_menu():
+    clear_screen()
     header("Opções de Clientes")
     print("[1] - Cadastrar Cliente")
     print("[2] - Listar Clientes")
@@ -16,23 +17,39 @@ def customer_menu():
     print("[5] - Deletar Cliente")
     print("[6] - Sair")
 
+def update_menu():
+    header("Atualização de Cliente")
+    print("[1] - Nome")
+    print("[2] - Sobrenome")
+    print("[3] - Data de Nascimento")
+    print("[4] - Email")
+    print("[5] - Telefone")
+    print("[6] - Voltar")
 
-def get_option_menu() -> str:
+def get_option_menu(min_option: int, max_option: int, action_menu: Callable) -> str:
+    action_menu()
     while True:
-        customer_menu()
         input_option = input("Digite a opção desejada: ")
 
         try:
             int_option = int(input_option)
-            if 1 <= int_option <= 6:
+            if int_option == max_option:
+                return
+            if min_option <= int_option <= max_option:
                 return input_option
             else:
-                show_error("Favor digitar uma opção válida entre 1 e 6")
-        except ValueError as e:
-            show_error(f"Favor digitar um número inteiro: {e}")
-
+                clear_lines(1)
+                print(f"\033[91mErro: Favor digitar uma opção válida entre {min_option} e {max_option}\033[0m")
+                sleep(2)
+                clear_lines(1)
+        except ValueError:
+            clear_lines(1)
+            print(f"\033[91mErro: Favor digitar um número inteiro\033[0m")
+            sleep(2)
+            clear_lines(1)
 
 def create_customer_form() -> Dict[str, str]:
+    clear_screen()
     header("Cadastro de Cliente")
     customer_info: Dict[str, str] = {
         "first_name": input("Digite o nome do cliente: "),
@@ -43,35 +60,40 @@ def create_customer_form() -> Dict[str, str]:
     }
     return customer_info
 
-def get_id_form() -> str:
+def get_id_form() -> int:
+    clear_screen()
     while True:
         header("Busca de Cliente por ID")
         id_customer = input("Digite o ID do cliente: ")
 
         try:
-            validate_is_integer(id_customer)
-            id_customer_int = int(id_customer)
-            return id_customer_int
-        except ValueError as e:
-            show_error(f"{e}")
+            int_id_customer = int(id_customer)
+        except ValueError:
+            show_error("Valor deve ser um número inteiro")
+            continue
+
+        if int_id_customer <= 0:
+            show_error("Valor deve ser maior que 0")
+            continue
+
+        return int_id_customer
 
 def show_customer(customer: Customer) -> None:
+    clear_screen()
     header("Cliente")
     print(f"ID: {customer.id}")
-    print(f"Nome: {customer.first_name} {customer.last_name}")
+    print(f"Nome: {customer.first_name}")
+    print(f"Sobrenome: {customer.last_name}")
     print(f"Data de Nascimento: {customer.birth_date}")
     print(f"Email: {customer.email}")
     print(f"Telefone: {customer.phone}")
     print(f"Data de Criação: {customer.created_at}")
     print(f"Data de Atualização: {customer.updated_at}")
-    print("--------------------------------")
 
 def show_all_customers(customers: List[Customer]) -> None:
+    clear_screen()
     header("Clientes Cadastrados")
 
     HEADERS = ["ID", "Nome", "Sobrenome", "Email", "Telefone"]
-    DATAS = customers_to_table_data(customers) #Converte a lista de clientes (Objetos) para uma lista de listas (Tabela)
-    render_table(HEADERS, DATAS) #Exibe a tabela com os dados
-
-if __name__ == "__main__":
-    create_customer_form()
+    DATAS = customers_to_table_data(customers)
+    render_table(HEADERS, DATAS)

@@ -17,6 +17,7 @@ def show_success(message: str) -> None:
     sleep(3)
 
 def new_interaction(message: str) -> bool:
+    clear_lines(1)
     print(message)
 
     while True:

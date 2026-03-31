@@ -3,6 +3,7 @@ from src.utils.clear_screen import clear_screen
 from typing import Dict, List, Callable
 from src.models.customer import Customer
 from time import sleep
+from readchar import readkey
 from src.view.suport import show_error, show_success, clear_lines
 from src.utils.object_to_table import customers_to_table_data
 from src.utils.table_formatter import render_table
@@ -34,7 +35,7 @@ def get_option_menu(min_option: int, max_option: int, action_menu: Callable) -> 
         try:
             int_option = int(input_option)
             if int_option == max_option:
-                return
+                return None
             if min_option <= int_option <= max_option:
                 return input_option
             else:
@@ -97,3 +98,21 @@ def show_all_customers(customers: List[Customer]) -> None:
     HEADERS = ["ID", "Nome", "Sobrenome", "Email", "Telefone"]
     DATAS = customers_to_table_data(customers)
     render_table(HEADERS, DATAS)
+
+def show_confirmation_action(message: str, clear_lines_number: int) -> bool:
+    if clear_lines_number:
+        clear_lines(clear_lines_number)
+    print(message)
+    while True:
+        key = readkey().lower()
+        if key == "s":
+            return True
+        elif key == "n":
+            return False
+        else:
+            show_error("Favor digitar uma opção válida entre S e N")
+
+def show_warning(message: str) -> None:
+    clear_screen()
+    print(f"\033[93mAtenção: {message}\033[0m")
+    sleep(3)

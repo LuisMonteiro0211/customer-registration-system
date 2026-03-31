@@ -170,6 +170,7 @@ class CustomerController:
                     if show_confirmation_action("Deseja realmente deletar o cliente? [S/N]", 1):
                         self.customer_service.delete_customer(int(id_customer))
                         show_success(f"Cliente deletado com sucesso! ID: {id_customer}")
+                        break
                     else:
                         show_warning("Ação cancelada")
                         break

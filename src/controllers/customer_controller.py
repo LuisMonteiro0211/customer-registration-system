@@ -78,38 +78,46 @@ class CustomerController:
         from src.view.customer_view import get_id_form
         from src.view.customer_view import show_customer
 
-        id_customer = get_id_form()
-        try:
-            customer = self.customer_service.get_customer_by_id(int(id_customer))
-            show_customer(customer)
-        except Exception as e:
-            show_error(f"Erro ao listar cliente: {e}")
+        while True:
+            id_customer = get_id_form()
+            try:
+                customer = self.customer_service.get_customer_by_id(int(id_customer))
+                if customer:
+                    show_customer(customer)
+                    break
+            except Exception as e:
+                show_error(f"Erro ao listar cliente: {e}")
 
     def _update_customer(self) -> None:
         from src.view.customer_view import get_id_form
         from src.view.customer_view import get_option_menu
         from src.view.customer_view import show_customer
         from src.view.customer_view import update_menu
-
+        from src.view.customer_view import show_warning
         LIST_ACTIONS = {
             "3": validate_date_format,
             "4": validate_email,
             "5": validate_phone,
         }
 
-        id_customer_to_update = get_id_form()
 
-        try:
-            customer_to_update = self.customer_service.get_customer_by_id(id_customer_to_update)
-        except Exception as e:
-            show_error(f"Erro ao buscar cliente: {e}")
-            return
+        while True:
+            id_customer_to_update = get_id_form()
+            try:
+                customer_to_update = self.customer_service.get_customer_by_id(id_customer_to_update)
+                if customer_to_update: 
+                    break
+            except Exception as e:
+                show_error(f"Erro ao buscar cliente: {e}")
 
         list_fields_to_update = []
 
         while True:
             show_customer(customer_to_update)
             field_to_update = get_option_menu(1, 6, update_menu)
+
+            if not field_to_update:
+                break
 
             while True:
                 value_to_update = input("Digite um novo valor para o campo: ")
@@ -123,14 +131,18 @@ class CustomerController:
                     break
                 except ValueError as e:
                     clear_lines(1)
-                    print(f"\033[91mErro: {e}\033[0m")
+                    show_error(f"Erro ao validar/converter os dados do cliente: {e}")
                     sleep(2)
-                    clear_lines(1)
+                    clear_lines(2)
 
             list_fields_to_update.append((field_to_update, value_to_update))
 
             if not new_interaction("Deseja atualizar outro campo? [S/N]"):
                 break
+
+        if not list_fields_to_update:
+            show_warning("Nenhum campo foi atualizado")
+            return
 
         customer_update_dto = UpdateCustomerDTO(list_fields=list_fields_to_update)
 
@@ -142,11 +154,24 @@ class CustomerController:
 
     def _delete_customer(self) -> None:
         from src.view.customer_view import get_id_form
-        from src.view.customer_view import show_success
+        from src.view.customer_view import show_success, show_warning
+        from src.view.customer_view import show_confirmation_action
 
-        id_customer = get_id_form()
-        try:
-            self.customer_service.delete_customer(int(id_customer))
-            show_success(f"Cliente deletado com sucesso! ID: {id_customer}")
-        except Exception as e:
-            show_error(f"Erro ao deletar cliente: {e}")
+        
+        while True:
+            id_customer = get_id_form()
+            try:
+                customer_is_exists = self.customer_service.get_customer_by_id(int(id_customer))
+
+                if not customer_is_exists:
+                    show_error("Cliente não encontrado")
+                    continue
+                else:
+                    if show_confirmation_action("Deseja realmente deletar o cliente? [S/N]", 1):
+                        self.customer_service.delete_customer(int(id_customer))
+                        show_success(f"Cliente deletado com sucesso! ID: {id_customer}")
+                    else:
+                        show_warning("Ação cancelada")
+                        break
+            except Exception as e:
+                show_error(f"Erro ao deletar cliente: {e}")

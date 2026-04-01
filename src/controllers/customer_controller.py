@@ -6,6 +6,16 @@ from src.utils.validators import validate_filled_string, validate_email, validat
 from src.utils.formatters import convert_to_us_date, format_phone_br
 
 class CustomerController:
+    """
+    Controlador de clientes - Intermedia a interação entre a view e o service
+    
+    Atributos:
+        customer_service: CustomerService - Serviço de clientes
+        menu_options: dict - Dicionário com as opções do menu
+        
+    Métodos:
+        handle_menu() -> None - Gerencia o menu principal de clientes
+    """
     def __init__(self, customer_service: CustomerService):
         self.customer_service = customer_service
         self.menu_options = {
@@ -17,6 +27,11 @@ class CustomerController:
         }
 
     def handle_menu(self):
+        """
+        Gerencia o menu principal de operações com clientes
+        
+        Exibe o menu e executa as ações selecionadas pelo usuário
+        """
         from src.view.customer_view import get_option_menu
         from src.view.customer_view import customer_menu
 
@@ -33,6 +48,14 @@ class CustomerController:
                     break
 
     def _create_customer(self) -> int:
+        """
+        Cria um novo cliente
+        
+        Coleta os dados via formulário, valida e envia ao serviço
+        
+        Returns:
+            int - ID do cliente criado ou None em caso de erro
+        """
         from src.view.customer_view import create_customer_form
         customer_info = create_customer_form()
 
@@ -67,6 +90,11 @@ class CustomerController:
             show_error(f"Erro ao criar cliente: {e}")
 
     def _list_all_customers(self) -> None:
+        """
+        Lista todos os clientes cadastrados
+        
+        Busca todos os clientes e exibe em formato de tabela
+        """
         from src.view.customer_view import show_all_customers
         try:
             customers = self.customer_service.get_all_customers()
@@ -75,6 +103,11 @@ class CustomerController:
             show_error(f"Erro ao listar clientes: {e}")
 
     def _list_customer_by_id(self) -> None:
+        """
+        Lista um cliente específico pelo ID
+        
+        Solicita o ID, busca o cliente e exibe seus detalhes
+        """
         from src.view.customer_view import get_id_form
         from src.view.customer_view import show_customer
 
@@ -89,22 +122,29 @@ class CustomerController:
                 show_error(f"Erro ao listar cliente: {e}")
 
     def _update_customer(self) -> None:
+        """
+        Atualiza os dados de um cliente
+        
+        Permite atualizar um ou mais campos de um cliente existente
+        """
         from src.view.customer_view import get_id_form
         from src.view.customer_view import get_option_menu
         from src.view.customer_view import show_customer
         from src.view.customer_view import update_menu
         from src.view.customer_view import show_warning
         LIST_ACTIONS = {
-            "3": validate_date_format,
-            "4": validate_email,
-            "5": validate_phone,
+            "1": ["first_name", validate_filled_string],
+            "2": ["last_name", validate_filled_string],
+            "3": ["birth_date", validate_date_format],
+            "4": ["email", validate_email],
+            "5": ["phone", validate_phone],
         }
 
-
         while True:
-            id_customer_to_update = get_id_form()
+            #Passo 1: Buscar o cliente pelo ID
+            customer_id_to_update = get_id_form()
             try:
-                customer_to_update = self.customer_service.get_customer_by_id(id_customer_to_update)
+                customer_to_update = self.customer_service.get_customer_by_id(customer_id_to_update)
                 if customer_to_update: 
                     break
             except Exception as e:
@@ -113,6 +153,7 @@ class CustomerController:
         list_fields_to_update = []
 
         while True:
+            #Passo 2: Mostrar o cliente encontrado e exibir o menu de atualização
             show_customer(customer_to_update)
             field_to_update = get_option_menu(1, 6, update_menu)
 
@@ -120,12 +161,14 @@ class CustomerController:
                 break
 
             while True:
+                #Passo 3: Solicitar o novo valor para o campo
                 value_to_update = input("Digite um novo valor para o campo: ")
 
                 try:
                     validate_filled_string(value_to_update, f"O campo deve ser preenchido com um valor válido")
 
-                    action = LIST_ACTIONS.get(field_to_update)
+                    #Passo 4: Validar o novo valor para o campo de forma específica
+                    action = LIST_ACTIONS.get(field_to_update)[1]
                     if action:
                         action(value_to_update)
                     break
@@ -135,7 +178,9 @@ class CustomerController:
                     sleep(2)
                     clear_lines(2)
 
-            list_fields_to_update.append((field_to_update, value_to_update))
+            #Passo 5: Adicionar o campo e o novo valor à lista de campos a serem atualizados
+            field_name = LIST_ACTIONS.get(field_to_update)[0]
+            list_fields_to_update.append((field_name, value_to_update))
 
             if not new_interaction("Deseja atualizar outro campo? [S/N]"):
                 break
@@ -144,15 +189,21 @@ class CustomerController:
             show_warning("Nenhum campo foi atualizado")
             return
 
-        customer_update_dto = UpdateCustomerDTO(list_fields=list_fields_to_update)
+        customer_update_dto = UpdateCustomerDTO(customer_id_to_update=customer_id_to_update, list_fields=list_fields_to_update)
 
         try:
+            #Passo 6: Atualizar o cliente
             result = self.customer_service.update_customer(customer_update_dto)
             show_success(f"Cliente atualizado com sucesso, foi afetado {result} linhas")
         except Exception as e:
             show_error(f"Erro ao atualizar cliente: {e}")
 
     def _delete_customer(self) -> None:
+        """
+        Deleta um cliente pelo ID
+        
+        Solicita confirmação antes de deletar permanentemente
+        """
         from src.view.customer_view import get_id_form
         from src.view.customer_view import show_success, show_warning
         from src.view.customer_view import show_confirmation_action

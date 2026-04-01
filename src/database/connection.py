@@ -9,6 +9,22 @@ load_dotenv() # Carrega as variáveis de ambiente do arquivo .env
 
 @contextmanager
 def get_connection():
+    """
+    Context manager para conexão com banco de dados MySQL
+    
+    Gerencia automaticamente a conexão, commit, rollback e fechamento
+    
+    Yields:
+        cursor - Cursor MySQL para execução de queries
+        
+    Raises:
+        Error: Erros de conexão ou execução de queries do MySQL
+        
+    Exemplo:
+        with get_connection() as cursor:
+            cursor.execute("SELECT * FROM customer")
+            results = cursor.fetchall()
+    """
     connection = None
     cursor = None
 

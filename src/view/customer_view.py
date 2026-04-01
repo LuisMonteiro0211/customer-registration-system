@@ -9,6 +9,9 @@ from src.utils.object_to_table import customers_to_table_data
 from src.utils.table_formatter import render_table
 
 def customer_menu():
+    """
+    Exibe o menu principal de operações com clientes
+    """
     clear_screen()
     header("Opções de Clientes")
     print("[1] - Cadastrar Cliente")
@@ -19,6 +22,9 @@ def customer_menu():
     print("[6] - Sair")
 
 def update_menu():
+    """
+    Exibe o menu de atualização de campos do cliente
+    """
     header("Atualização de Cliente")
     print("[1] - Nome")
     print("[2] - Sobrenome")
@@ -28,6 +34,17 @@ def update_menu():
     print("[6] - Voltar")
 
 def get_option_menu(min_option: int, max_option: int, action_menu: Callable) -> str:
+    """
+    Captura a opção do menu com validação
+    
+    Args:
+        min_option: int - Opção mínima válida
+        max_option: int - Opção máxima válida (opção de saída)
+        action_menu: Callable - Função que exibe o menu
+        
+    Returns:
+        str - Opção selecionada ou None se escolher sair
+    """
     action_menu()
     while True:
         input_option = input("Digite a opção desejada: ")
@@ -50,6 +67,12 @@ def get_option_menu(min_option: int, max_option: int, action_menu: Callable) -> 
             clear_lines(1)
 
 def create_customer_form() -> Dict[str, str]:
+    """
+    Formulário de cadastro de cliente
+    
+    Returns:
+        Dict[str, str] - Dicionário com os dados do cliente
+    """
     clear_screen()
     header("Cadastro de Cliente")
     customer_info: Dict[str, str] = {
@@ -62,6 +85,12 @@ def create_customer_form() -> Dict[str, str]:
     return customer_info
 
 def get_id_form() -> int:
+    """
+    Formulário para captura de ID do cliente
+    
+    Returns:
+        int - ID do cliente validado
+    """
     clear_screen()
     while True:
         header("Busca de Cliente por ID")
@@ -80,6 +109,12 @@ def get_id_form() -> int:
         return int_id_customer
 
 def show_customer(customer: Customer) -> None:
+    """
+    Exibe os detalhes de um cliente
+    
+    Args:
+        customer: Customer - Objeto do cliente a ser exibido
+    """
     clear_screen()
     header("Cliente")
     print(f"ID: {customer.id}")
@@ -92,6 +127,12 @@ def show_customer(customer: Customer) -> None:
     print(f"Data de Atualização: {customer.updated_at}")
 
 def show_all_customers(customers: List[Customer]) -> None:
+    """
+    Exibe todos os clientes em formato de tabela
+    
+    Args:
+        customers: List[Customer] - Lista de clientes a serem exibidos
+    """
     clear_screen()
     header("Clientes Cadastrados")
 
@@ -100,6 +141,16 @@ def show_all_customers(customers: List[Customer]) -> None:
     render_table(HEADERS, DATAS)
 
 def show_confirmation_action(message: str, clear_lines_number: int) -> bool:
+    """
+    Solicita confirmação do usuário (S/N)
+    
+    Args:
+        message: str - Mensagem de confirmação
+        clear_lines_number: int - Número de linhas a limpar antes de exibir
+        
+    Returns:
+        bool - True se confirmado (S), False se negado (N)
+    """
     if clear_lines_number:
         clear_lines(clear_lines_number)
     print(message)
@@ -113,6 +164,12 @@ def show_confirmation_action(message: str, clear_lines_number: int) -> bool:
             show_error("Favor digitar uma opção válida entre S e N")
 
 def show_warning(message: str) -> None:
+    """
+    Exibe mensagem de aviso em amarelo
+    
+    Args:
+        message: str - Mensagem de aviso
+    """
     clear_screen()
     print(f"\033[93mAtenção: {message}\033[0m")
     sleep(3)

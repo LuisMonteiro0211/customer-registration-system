@@ -7,10 +7,12 @@ from src.utils.formatters import convert_to_us_date
 def validate_is_integer(value: int) -> None:
     """
     Valida se o valor é um número inteiro e maior que 0
+    
     Args:
-        value: int: Valor a ser validado
-    Returns:
-        None
+        value: int - Valor a ser validado
+        
+    Raises:
+        ValueError: Se o valor não for inteiro ou menor/igual a 0
     """
     if not isinstance(value, int):
         logging.warning("Valor deve ser um número inteiro")
@@ -22,11 +24,13 @@ def validate_is_integer(value: int) -> None:
 def validate_filled_string(value: str, message: str) -> None:
     """
     Valida se o valor é uma string não vazia e não contém somente espaços
-
+    
     Args:
-        value: str: Valor a ser validado
-    Returns:
-        None
+        value: str - Valor a ser validado
+        message: str - Mensagem de erro customizada
+        
+    Raises:
+        ValueError: Se a string estiver vazia ou contiver apenas espaços
     """
     if not value or value.isspace():
         logging.warning(message)
@@ -34,11 +38,13 @@ def validate_filled_string(value: str, message: str) -> None:
 
 def validate_email(email: str) -> None:
     """
-    Valida o email do cliente
+    Valida o formato do email
+    
     Args:
-        email: str: Email do cliente a ser validado
-    Returns:
-        None
+        email: str - Email a ser validado
+        
+    Raises:
+        ValueError: Se o email estiver vazio ou em formato inválido
     """
     validate_filled_string(email, "Email deve ser preenchido")
     
@@ -49,13 +55,13 @@ def validate_email(email: str) -> None:
 
 def validate_phone(phone: str) -> None:
     """
-    Valida o telefone do cliente
-
+    Valida o formato do telefone
+    
     Args:
-        phone: str: Telefone do cliente a ser validado
-        Deve conter até 11 dígitos e começar com +
-    Returns:
-        None
+        phone: str - Telefone a ser validado (até 11 dígitos, pode começar com +)
+        
+    Raises:
+        ValueError: Se o telefone estiver vazio, inválido ou com mais de 11 dígitos
     """
     validate_filled_string(phone, "Telefone deve ser preenchido")
     
@@ -74,12 +80,13 @@ def validate_phone(phone: str) -> None:
 
 def validate_birth_date(birth_date: str) -> None:
     """
-    Valida a data de nascimento do cliente
-
+    Valida a data de nascimento
+    
     Args:
-        birth_date: date: Data de nascimento do cliente a ser validada
-    Returns:
-        None
+        birth_date: date - Data de nascimento a ser validada
+        
+    Raises:
+        ValueError: Se a data for futura ou anterior a 1900
     """
 
     if birth_date > date.today() or birth_date < date(1900, 1, 1):
@@ -91,9 +98,10 @@ def validate_date_format(date_str: str) -> None:
     Valida se a data está no formato DD/MM/YYYY
     
     Args:
-        date_str: str: Data a ser validada
-    Returns:
-        None
+        date_str: str - Data a ser validada
+        
+    Raises:
+        ValueError: Se a data não estiver no formato DD/MM/YYYY
     """
     validate_filled_string(date_str, "Data deve ser preenchida")
 

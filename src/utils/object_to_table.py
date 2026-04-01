@@ -4,12 +4,13 @@ from typing import List, Any
 
 def customers_to_table_data(customers: List[Customer]) -> List[List[Any]]:
     """
-    Converte uma lista de clientes (Objetos) para uma lista de listas (Tabela)
-
+    Converte uma lista de objetos Customer para formato de tabela
+    
     Args:
-        list: List[Customer]: Lista de clientes a ser convertida
+        customers: List[Customer] - Lista de clientes a ser convertida
+        
     Returns:
-        List[List[Any]]: Lista de clientes convertida para tabela
+        List[List[Any]] - Lista de listas com dados dos clientes para tabela
     """
     return [[
     c.id, 

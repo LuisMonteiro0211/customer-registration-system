@@ -13,20 +13,29 @@ class CustomerService:
     def __init__(self, customer_repository: ICustomerRepository):
         """
         Serviço de clientes
+        
         Atributos:
-            - customer_repository: CustomerRepository: Repositório de clientes (Instância do repositório já pronta para uso - Injeção de Dependência)
+            customer_repository: CustomerRepository - Repositório de clientes (Instância do repositório já pronta para uso - Injeção de Dependência)
+            
         Métodos:
-            - create_customer(customer_dto: CreateCustomerDTO) -> int: Cria um novo cliente
-            - get_customer_by_id(id: int) -> Customer: Retorna um cliente pelo ID
-            - get_all_customers() -> List[Customer]: Retorna todos os clientes
-            - update_customer(id: int, customer_dto: UpdateCustomerDTO) -> int: Atualiza um cliente
-            - delete_customer(id: int) -> int: Deleta um cliente pelo ID
+            create_customer(customer_dto: CreateCustomerDTO) -> int - Cria um novo cliente
+            get_customer_by_id(id: int) -> Customer - Retorna um cliente pelo ID
+            get_all_customers() -> List[Customer] - Retorna todos os clientes
+            update_customer(id: int, customer_dto: UpdateCustomerDTO) -> int - Atualiza um cliente
+            delete_customer(id: int) -> int - Deleta um cliente pelo ID
         """
         self.customer_repository = customer_repository # Recebe uma instância do repositório já pronta para uso
 
     def _validate_customer(self, customer_dto: CreateCustomerDTO) -> None:
         """
+        Valida os dados do cliente antes de criar ou atualizar
         
+        Args:
+            customer_dto: CreateCustomerDTO - DTO com os dados do cliente a serem validados
+            
+        Raises:
+            ValueError: Se o email ou telefone já estiverem cadastrados
+            ValueError: Se a data de nascimento for inválida
         """
         
         if self.customer_repository.exists_by_email(customer_dto.email):
@@ -42,11 +51,12 @@ class CustomerService:
     def create_customer(self, customer_dto: CreateCustomerDTO) -> int:
         """
         Cria um novo cliente
-
+        
         Args:
-            customer_dto: CreateCustomerDTO: DTO de criação de cliente
+            customer_dto: CreateCustomerDTO - DTO de criação de cliente
+            
         Returns:
-            int: ID do cliente criado
+            int - ID do cliente criado
         """
         self._validate_customer(customer_dto)
 
@@ -67,11 +77,12 @@ class CustomerService:
     def get_customer_by_id(self, id: int) -> Customer:
         """
         Retorna um cliente pelo ID
-
+        
         Args:
-            id: int: ID do cliente a ser retornado
+            id: int - ID do cliente a ser retornado
+            
         Returns:
-            Customer: Cliente encontrado
+            Customer - Cliente encontrado
         """
         validate_is_integer(id)
 
@@ -83,12 +94,10 @@ class CustomerService:
     def get_all_customers(self) -> List[Customer]:
         """
         Retorna todos os clientes
-
-        Args:
-            Nenhum
+        
         Returns:
-            List[Customer]: Lista com todos os clientes
-
+            List[Customer] - Lista com todos os clientes
+            
         Raises:
             ValueError: Se não houver clientes cadastrados
         """
@@ -99,10 +108,12 @@ class CustomerService:
     def update_customer(self,customer_update_dto: UpdateCustomerDTO) -> int:
         """
         Atualiza um cliente
+        
         Args:
-            customer_update_dto: UpdateCustomerDTO: DTO de atualização de cliente
+            customer_update_dto: UpdateCustomerDTO - DTO de atualização de cliente
+            
         Returns:
-            int: ID do cliente atualizado
+            int - ID do cliente atualizado
         """
 
         #Montar o model do Cliente
@@ -114,10 +125,12 @@ class CustomerService:
     def delete_customer(self, id: int) -> int:
         """
         Deleta um cliente pelo ID
+        
         Args:
-            id: int: ID do cliente a ser deletado
+            id: int - ID do cliente a ser deletado
+            
         Returns:
-            int: Número de linhas deletadas
+            int - Número de linhas deletadas
         """
         validate_is_integer(id)
 

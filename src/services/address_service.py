@@ -12,11 +12,12 @@ class AddressService:
     def create_address(self, address_dto: CreateAddressDTO) -> int:
         """
         Cria um novo endereço
-
+        
         Args:
-            address_dto: CreateAddressDTO: DTO de criação de endereço
+            address_dto: CreateAddressDTO - DTO de criação de endereço
+            
         Returns:
-            int: ID do endereço criado
+            int - ID do endereço criado
         """
         validate_filled_string(address_dto.street)
         validate_filled_string(address_dto.number)
@@ -41,14 +42,14 @@ class AddressService:
             raise e
 
     def get_address_by_id(self, id: int) -> Address:
-
         """
         Retorna um endereço pelo ID
-
+        
         Args:
-            id: int: ID do endereço a ser retornado
+            id: int - ID do endereço a ser retornado
+            
         Returns:
-            Address: Endereço encontrado
+            Address - Endereço encontrado
         """
         validate_is_integer(id)
 
@@ -63,11 +64,9 @@ class AddressService:
     def get_all_addresses(self) -> List[Address]:
         """
         Retorna todos os endereços
-
-        Args:
-            Nenhum
+        
         Returns:
-            List[Address]: Lista com todos os endereços
+            List[Address] - Lista com todos os endereços
         """
         try:
             result = self.address_repository.get_all()
@@ -80,11 +79,12 @@ class AddressService:
     def update_address(self, address_update_dto: UpdateAddressDTO) -> int:
         """
         Atualiza um endereço
-
+        
         Args:
-            address_update_dto: UpdateAddressDTO: DTO de atualização de endereço
+            address_update_dto: UpdateAddressDTO - DTO de atualização de endereço
+            
         Returns:
-            int: ID do endereço atualizado
+            int - ID do endereço atualizado
         """
         validate_is_integer(address_update_dto.id)
         validate_filled_string(address_update_dto.street)
@@ -105,9 +105,10 @@ class AddressService:
         Deleta um endereço pelo ID
         
         Args:
-            id: int: ID do endereço a ser deletado
+            id: int - ID do endereço a ser deletado
+            
         Returns:
-            int: ID do endereço deletado
+            int - ID do endereço deletado
         """
         validate_is_integer(id)
 

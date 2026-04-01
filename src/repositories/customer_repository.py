@@ -7,15 +7,14 @@ class CustomerRepository(ICustomerRepository):
     """
     Repositório de clientes
     
-    Atributos:
-        - Nenhum
-
     Métodos:
-        - create(customer: Customer) -> int: Salva o cliente e retorna o ID final
-        - get_by_id(id: int) -> Customer: Retorna o cliente pelo ID
-        - get_all() -> List[Customer]: Retorna lista com todos os clientes
-        - update(customer: Customer) -> int: Atualiza o cliente e retorna o ID final
-        - delete(id: int) -> int: Deleta o cliente pelo ID
+        create(customer: Customer) -> int - Salva o cliente e retorna o ID final
+        get_by_id(id: int) -> Customer - Retorna o cliente pelo ID
+        get_all() -> List[Customer] - Retorna lista com todos os clientes
+        update(customer: Customer) -> int - Atualiza o cliente e retorna o ID final
+        delete(id: int) -> int - Deleta o cliente pelo ID
+        exists_by_email(email: str) -> bool - Verifica se existe cliente com o email
+        exists_by_phone(phone: str) -> bool - Verifica se existe cliente com o telefone
     """
     def __init__(self) -> None:
         pass
@@ -23,10 +22,12 @@ class CustomerRepository(ICustomerRepository):
     def create(self, customer: Customer) -> int:
         """
         Salva o cliente e retorna o ID final
+        
         Args:
-            customer: Customer: Cliente a ser salvo
+            customer: Customer - Cliente a ser salvo
+            
         Returns:
-            int: ID do cliente salvo
+            int - ID do cliente salvo
         """
         with get_connection() as cursor:
             query = """INSERT INTO customer (first_name, last_name, birth_date, email, phone) VALUES (%s, %s, %s, %s, %s)
@@ -38,10 +39,12 @@ class CustomerRepository(ICustomerRepository):
     def get_by_id(self, id: int) -> Customer:
         """
         Retorna o cliente pelo ID
+        
         Args:
-            id: int: ID do cliente a ser retornado
+            id: int - ID do cliente a ser retornado
+            
         Returns:
-            Customer: Cliente encontrado
+            Customer - Cliente encontrado
             
         Raises:
             ValueError: Se o cliente não for encontrado
@@ -68,10 +71,10 @@ class CustomerRepository(ICustomerRepository):
     def get_all(self) -> List[Customer]:
         """
         Retorna lista com todos os clientes
-
+        
         Returns:
-            List[Customer]: Lista com todos os clientes
-
+            List[Customer] - Lista com todos os clientes
+            
         Raises:
             ValueError: Se não houver clientes cadastrados
         """
@@ -98,10 +101,12 @@ class CustomerRepository(ICustomerRepository):
     def update(self, customer: Customer) -> int:
         """
         Atualiza o cliente e retorna o ID final
+        
         Args:
-            customer: Customer: Cliente a ser atualizado
+            customer: Customer - Cliente a ser atualizado
+            
         Returns:
-            int: Quantidade de linhas afetadas
+            int - Quantidade de linhas afetadas
         """
         with get_connection() as cursor:
             query = """
@@ -118,10 +123,12 @@ class CustomerRepository(ICustomerRepository):
     def delete(self, id: int) -> int:
         """
         Deleta o cliente pelo ID
+        
         Args:
-            id: int: ID do cliente a ser deletado
+            id: int - ID do cliente a ser deletado
+            
         Returns:
-            int: Número de linhas deletadas
+            int - Número de linhas deletadas
         """
         with get_connection() as cursor:
             query = """DELETE FROM customer WHERE id = %s LIMIT 1"""
@@ -130,6 +137,15 @@ class CustomerRepository(ICustomerRepository):
             return cursor.rowcount
     
     def exists_by_email(self, email: str) -> bool:
+        """
+        Verifica se existe cliente com o email informado
+        
+        Args:
+            email: str - Email a ser verificado
+            
+        Returns:
+            bool - True se existir, False caso contrário
+        """
         with get_connection() as cursor:
             query = """SELECT email FROM customer WHERE email = %s"""
             params = (email,)
@@ -138,6 +154,15 @@ class CustomerRepository(ICustomerRepository):
             return result
 
     def exists_by_phone(self, phone: str) -> bool:
+        """
+        Verifica se existe cliente com o telefone informado
+        
+        Args:
+            phone: str - Telefone a ser verificado
+            
+        Returns:
+            bool - True se existir, False caso contrário
+        """
         with get_connection() as cursor:
             query = """SELECT phone FROM customer WHERE phone = %s"""
             params = (phone,)

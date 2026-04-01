@@ -13,11 +13,12 @@ class AddressRepository(IRepository):
     def create(self, address: CreateAddressDTO) -> int:
         """
         Salva o endereço e retorna o ID final
-
+        
         Args:
-            address: CreateAddressDTO: Endereço a ser salvo
+            address: CreateAddressDTO - Endereço a ser salvo
+            
         Returns:
-            int: ID do endereço salvo
+            int - ID do endereço salvo
         """
         with get_connection() as cursor:
             query = """
@@ -31,11 +32,15 @@ class AddressRepository(IRepository):
     def get_by_id(self, id: int) -> Address:
         """
         Retorna o endereço pelo ID
-
+        
         Args:
-            id: int: ID do endereço a ser retornado
+            id: int - ID do endereço a ser retornado
+            
         Returns:
-            Address: Endereço encontrado
+            Address - Endereço encontrado
+            
+        Raises:
+            ValueError: Se o endereço não for encontrado
         """
         with get_connection() as cursor:
             query = """
@@ -62,9 +67,9 @@ class AddressRepository(IRepository):
     def get_all(self) -> List[Address]:
         """
         Retorna lista com todos os endereços
-
+        
         Returns:
-            List[Address]: Lista com todos os endereços
+            List[Address] - Lista com todos os endereços
         """
         with get_connection() as cursor:
             query = """
@@ -87,10 +92,12 @@ class AddressRepository(IRepository):
     def update(self, address: Address) -> int:
         """
         Atualiza o endereço e retorna o ID final
+        
         Args:
-            address: Address: Endereço a ser atualizado
+            address: Address - Endereço a ser atualizado
+            
         Returns:
-            int: Quantidade de linhas afetadas
+            int - Quantidade de linhas afetadas
         """
         with get_connection() as cursor:
             query = """
@@ -106,10 +113,12 @@ class AddressRepository(IRepository):
     def delete(self, id: int) -> int:
         """
         Deleta o endereço pelo ID
+        
         Args:
-            id: int: ID do endereço a ser deletado
+            id: int - ID do endereço a ser deletado
+            
         Returns:
-            int: Quantidade de linhas afetadas
+            int - Quantidade de linhas afetadas
         """
         with get_connection() as cursor:
             query = """

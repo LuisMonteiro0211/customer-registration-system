@@ -116,7 +116,20 @@ class CustomerService:
             int - ID do cliente atualizado
         """
 
-        #Montar o model do Cliente
+        RULES = {
+            "email": self.customer_repository.exists_by_email,
+            "phone": self.customer_repository.exists_by_phone,
+            "birth_date": validate_birth_date,
+        }
+
+        for field, value in customer_update_dto.list_fields:
+            validade_action = (RULES.get(field))
+            #Caso o campo precisa de ser validado dentro da regra de negócio, chama a função de validação   
+            if validade_action:
+                validade_action(value)
+
+                if validade_action:
+                    raise ValueError(f"O campo {field} com o valor {value} já está cadastrado")
 
         result = self.customer_repository.update(customer_update_dto)
         logging.info(f"Cliente atualizado com sucesso! ID: {result}")

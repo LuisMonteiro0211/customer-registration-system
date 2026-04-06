@@ -90,8 +90,8 @@ def validate_birth_date(birth_date: str) -> None:
     """
 
     if birth_date > date.today() or birth_date < date(1900, 1, 1):
-        logging.warning("Data de nascimento invalido")
-        raise ValueError("Data de nascimento invalido")
+        logging.warning("Data de nascimento inválida")
+        raise ValueError("Data de nascimento inválida")
 
 def validate_date_format(date_str: str) -> None:
     """

@@ -26,27 +26,33 @@ class CustomerService:
         """
         self.customer_repository = customer_repository # Recebe uma instância do repositório já pronta para uso
 
-    def _validate_customer(self, customer_dto: CreateCustomerDTO) -> None:
+    def _validate_customer_email(self, email: str) -> None:
         """
-        Valida os dados do cliente antes de criar ou atualizar
+        Valida se o email já está cadastrado
         
         Args:
-            customer_dto: CreateCustomerDTO - DTO com os dados do cliente a serem validados
+            email: str - Email a ser validado
             
         Raises:
-            ValueError: Se o email ou telefone já estiverem cadastrados
-            ValueError: Se a data de nascimento for inválida
+            ValueError: Se o email já estiver cadastrado
         """
-        
-        if self.customer_repository.exists_by_email(customer_dto.email):
+        if self.customer_repository.exists_by_email(email):
             logging.warning("Email já cadastrado")
             raise ValueError("Email já cadastrado")
 
-        if self.customer_repository.exists_by_phone(customer_dto.phone):
+    def _validate_customer_phone(self, phone: str) -> None:
+        """
+        Valida se o telefone já está cadastrado
+        
+        Args:
+            phone: str - Telefone a ser validado
+            
+        Raises:
+            ValueError: Se o telefone já estiver cadastrado
+        """
+        if self.customer_repository.exists_by_phone(phone):
             logging.warning("Telefone já cadastrado")
             raise ValueError("Telefone já cadastrado")
-        
-        validate_birth_date(customer_dto.birth_date)
 
     def create_customer(self, customer_dto: CreateCustomerDTO) -> int:
         """
@@ -58,7 +64,10 @@ class CustomerService:
         Returns:
             int - ID do cliente criado
         """
-        self._validate_customer(customer_dto)
+        #Validação dos dados do cliente antes de criar
+        self._validate_customer_email(customer_dto.email)
+        self._validate_customer_phone(customer_dto.phone)
+        validate_birth_date(customer_dto.birth_date)
 
         customer = Customer(
             first_name=customer_dto.first_name,
@@ -117,8 +126,8 @@ class CustomerService:
         """
 
         RULES = {
-            "email": self.customer_repository.exists_by_email,
-            "phone": self.customer_repository.exists_by_phone,
+            "email": self._validate_customer_email,
+            "phone": self._validate_customer_phone,
             "birth_date": validate_birth_date,
         }
 

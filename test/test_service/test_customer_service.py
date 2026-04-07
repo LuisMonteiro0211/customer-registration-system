@@ -19,10 +19,9 @@ class FakeCustomerRepository(IRepository):
         self.flag_email_exists = False #Caso seja necessário validar se o email já existe | Caso não seja necessário, retorna False
         self.flag_phone_exists = False
         self.return_none_on_get = False #Caso seja necessário retornar None | Caso não seja necessário, retorna False
-        self.flag_birth_date_past = False #Caso seja necessário validar se a data de nascimento é anterior a data atual | Caso não seja necessário, retorna False
-        self.flag_birth_date_future = False #Caso seja necessário validar se a data de nascimento é futura | Caso não seja necessário, retorna False
         self.return_none_on_get_all = False #Caso seja necessário retornar None | Caso não seja necessário, retorna False
         self.customer_id_to_return = None #Caso seja necessário retornar um ID específico | Caso não seja necessário, retorna None
+        self.update_called = False
         
     def create(self, customer) -> int:
         if self.should_fail_create:
@@ -55,14 +54,9 @@ class FakeCustomerRepository(IRepository):
         )]
 
     def update(self, list_fields: List[tuple[str, str]]) -> int:
-        if self.flag_email_exists:
-            raise ValueError("Email já cadastrado")
-        if self.flag_phone_exists:
-            raise ValueError("Telefone já cadastrado")
-        if self.flag_birth_date_past:
-            raise ValueError("Data de nascimento inválida")
-        if self.flag_birth_date_future:
-            raise ValueError("Data de nascimento inválida")
+        self.update_called = True
+        if self.should_fail_update:
+            return 0
         return 1
     
     def delete(self, id: int) -> int:
@@ -134,6 +128,27 @@ def dto_invalid_birth_date_future():
 def dto_update_success():
     return UpdateCustomerDTO(
         list_fields=[("first_name", "João"), ("last_name", "Silva"), ("birth_date", date(2000, 1, 1)), ("email", "joao.silva@example.com"), ("phone", "(11) 99999-9999")],
+        customer_id_to_update=1
+    )
+
+@pytest.fixture
+def dto_update_multiple_valid_fields():
+    return UpdateCustomerDTO(
+        list_fields=[("first_name", "Carlos"), ("last_name", "Souza"), ("email", "carlos.souza@example.com")],
+        customer_id_to_update=1
+    )
+
+@pytest.fixture
+def dto_update_only_first_name():
+    return UpdateCustomerDTO(
+        list_fields=[("first_name", "Carlos")],
+        customer_id_to_update=1
+    )
+
+@pytest.fixture
+def dto_update_valid_and_invalid_phone():
+    return UpdateCustomerDTO(
+        list_fields=[("first_name", "Carlos"), ("phone", "+55(11) 99999-9999")],
         customer_id_to_update=1
     )
 
@@ -239,25 +254,69 @@ def test_update_customer_success(service, dto_update_success):
     """Testa se o método update_customer atualiza um cliente com sucesso"""
     result = service.update_customer(dto_update_success)
     assert result > 0
+    assert service.customer_repository.update_called is True
 
-def test_update_customer_invalid_email(service, dto_update_invalid_email):
-    """Testa se o método update_customer retorna um erro se o email já existe"""
-    service.customer_repository.flag_email_exists = True
-    with pytest.raises(ValueError, match="Email já cadastrado"):
-        service.update_customer(dto_update_invalid_email)
+def test_update_customer_multiple_valid_fields(service, dto_update_multiple_valid_fields):
+    """Testa se o método update_customer aceita múltiplos campos válidos"""
+    result = service.update_customer(dto_update_multiple_valid_fields)
+    assert result > 0
+    assert service.customer_repository.update_called is True
+
+def test_update_customer_only_first_name(service, dto_update_only_first_name):
+    """Testa se o método update_customer funciona para campo sem regra de negócio"""
+    result = service.update_customer(dto_update_only_first_name)
+    assert result > 0
+    assert service.customer_repository.update_called is True
 
 def test_update_customer_invalid_phone(service, dto_update_invalid_phone):
     """Testa se o método update_customer retorna um erro se o telefone já existe"""
     service.customer_repository.flag_phone_exists = True
     with pytest.raises(ValueError, match="Telefone já cadastrado"):
         service.update_customer(dto_update_invalid_phone)
+    assert service.customer_repository.update_called is False
+
+def test_update_customer_invalid_email(service, dto_update_invalid_email):
+    """Testa se o método update_customer retorna um erro se o email já existe"""
+    service.customer_repository.flag_email_exists = True
+    with pytest.raises(ValueError, match="Email já cadastrado"):
+        service.update_customer(dto_update_invalid_email)
+    assert service.customer_repository.update_called is False
 
 def test_update_customer_invalid_birth_date_past(service, dto_update_invalid_birth_date_past):
     """Testa se o método update_customer retorna um erro se a data de nascimento é anterior a data atual"""
     with pytest.raises(ValueError, match="Data de nascimento inválida"):
         service.update_customer(dto_update_invalid_birth_date_past)
+    assert service.customer_repository.update_called is False
 
 def test_update_customer_invalid_birth_date_future(service, dto_update_invalid_birth_date_future):
     """Testa se o método update_customer retorna um erro se a data de nascimento é futura"""
     with pytest.raises(ValueError, match="Data de nascimento inválida"):
         service.update_customer(dto_update_invalid_birth_date_future)
+    assert service.customer_repository.update_called is False
+
+def test_update_customer_valid_and_invalid_phone(service, dto_update_valid_and_invalid_phone):
+    """Testa se o método update_customer falha quando um dos campos é inválido"""
+    service.customer_repository.flag_phone_exists = True
+    with pytest.raises(ValueError, match="Telefone já cadastrado"):
+        service.update_customer(dto_update_valid_and_invalid_phone)
+    assert service.customer_repository.update_called is False
+
+#####################################################################################################
+# Testes para o método delete_customer
+#####################################################################################################
+
+def test_delete_customer_success(service):
+    """Testa se o método delete_customer deleta um cliente com sucesso"""
+    result = service.delete_customer(1)
+    assert result > 0
+
+def test_delete_customer_invalid_id(service):
+    """Testa se o método delete_customer retorna erro para ID inválido"""
+    with pytest.raises(ValueError, match="Valor deve ser um número"):
+        service.delete_customer("1")
+
+def test_delete_customer_repository_failure(service):
+    """Testa se o método delete_customer propaga retorno 0 do repositório"""
+    service.customer_repository.should_fail_delete = True
+    result = service.delete_customer(1)
+    assert result == 0

@@ -25,7 +25,7 @@ class UpdateCustomerDTO:
     DTO para atualização de clientes
     
     Atributos:
-        list_fields: List[tuple[str, str]] - Lista de tuplas (campo, valor) a serem atualizados
+        list_fields: List[tuple[str, object]] - Lista de tuplas (campo, valor) a serem atualizados
         customer_id_to_update: int - ID do cliente a ser atualizado
         
     Exemplo:
@@ -34,5 +34,5 @@ class UpdateCustomerDTO:
         ["email", "joao.silva@example.com"], 
         ["phone", "(11) 99999-9999"]]
     """
-    list_fields: List[tuple[str, str]]
+    list_fields: List[tuple[str, object]]
     customer_id_to_update: int

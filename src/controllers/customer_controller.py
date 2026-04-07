@@ -1,3 +1,4 @@
+from datetime import datetime
 from src.view.suport import show_error, show_success, new_interaction, clear_lines
 from time import sleep
 from src.services.customer_service import CustomerService
@@ -68,7 +69,7 @@ class CustomerController:
             validate_phone(customer_info["phone"])
 
             #Formatação dos dados para o formato do banco de dados
-            date_formatter = convert_to_us_date(customer_info["birth_date"])
+            date_formatter = datetime.strptime(customer_info["birth_date"], "%d/%m/%Y").date()
             phone_formatter = format_phone_br(customer_info["phone"])
 
         except ValueError as e:
@@ -180,6 +181,8 @@ class CustomerController:
 
             #Passo 5: Adicionar o campo e o novo valor à lista de campos a serem atualizados
             field_name = LIST_ACTIONS.get(field_to_update)[0]
+            if field_name == "birth_date":
+                value_to_update = datetime.strptime(value_to_update, "%d/%m/%Y").date()
             list_fields_to_update.append((field_name, value_to_update))
 
             if not new_interaction("Deseja atualizar outro campo? [S/N]"):

@@ -126,10 +126,11 @@ class CustomerService:
             validade_action = (RULES.get(field))
             #Caso o campo precisa de ser validado dentro da regra de negócio, chama a função de validação   
             if validade_action:
-                validade_action(value)
-
-                if validade_action:
-                    raise ValueError(f"O campo {field} com o valor {value} já está cadastrado")
+                try:
+                    validade_action(value)
+                except ValueError as e:
+                    logging.warning(f"Erro ao validar o campo {field}: {e}")
+                    raise ValueError(f"Erro ao validar o campo {field}: {e}")
 
         result = self.customer_repository.update(customer_update_dto)
         logging.info(f"Cliente atualizado com sucesso! ID: {result}")

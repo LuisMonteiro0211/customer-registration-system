@@ -20,6 +20,7 @@ class FakeCustomerRepository(IRepository):
         self.flag_phone_exists = False
         self.return_none_on_get = False #Caso seja necessário retornar None | Caso não seja necessário, retorna False
         self.flag_birth_date_past = False #Caso seja necessário validar se a data de nascimento é anterior a data atual | Caso não seja necessário, retorna False
+        self.flag_birth_date_future = False #Caso seja necessário validar se a data de nascimento é futura | Caso não seja necessário, retorna False
         self.return_none_on_get_all = False #Caso seja necessário retornar None | Caso não seja necessário, retorna False
         self.customer_id_to_return = None #Caso seja necessário retornar um ID específico | Caso não seja necessário, retorna None
         
@@ -54,8 +55,14 @@ class FakeCustomerRepository(IRepository):
         )]
 
     def update(self, list_fields: List[tuple[str, str]]) -> int:
-        if self.should_fail_update:
-            return 0
+        if self.flag_email_exists:
+            raise ValueError("Email já cadastrado")
+        if self.flag_phone_exists:
+            raise ValueError("Telefone já cadastrado")
+        if self.flag_birth_date_past:
+            raise ValueError("Data de nascimento inválida")
+        if self.flag_birth_date_future:
+            raise ValueError("Data de nascimento inválida")
         return 1
     
     def delete(self, id: int) -> int:
@@ -123,6 +130,41 @@ def dto_invalid_birth_date_future():
         phone="(11) 99999-9999"
     )
 
+@pytest.fixture
+def dto_update_success():
+    return UpdateCustomerDTO(
+        list_fields=[("first_name", "João"), ("last_name", "Silva"), ("birth_date", date(2000, 1, 1)), ("email", "joao.silva@example.com"), ("phone", "(11) 99999-9999")],
+        customer_id_to_update=1
+    )
+
+@pytest.fixture
+def dto_update_invalid_email():
+    return UpdateCustomerDTO(
+        list_fields=[("email", "email@repeated.com")], #Email já cadastrado
+        customer_id_to_update=1
+    )
+
+@pytest.fixture
+def dto_update_invalid_phone():
+    return UpdateCustomerDTO(
+        list_fields=[("phone", "+55(11) 99999-9999")], #Telefone já cadastrado
+        customer_id_to_update=1
+    )
+
+@pytest.fixture
+def dto_update_invalid_birth_date_past():
+    return UpdateCustomerDTO(
+        list_fields=[("birth_date", date(1800, 1, 1))], #Data de nascimento anterior a data atual
+        customer_id_to_update=1
+    )
+
+@pytest.fixture
+def dto_update_invalid_birth_date_future():
+    return UpdateCustomerDTO(
+        list_fields=[("birth_date", date.today() + timedelta(days=1))], #Data de nascimento futura
+        customer_id_to_update=1
+    )
+
 def test_create_customer_success(service, dto_valido):
     """Testa se o método create_customer cria um cliente com sucesso"""
     customer_created = service.create_customer(dto_valido)
@@ -188,3 +230,34 @@ def test_get_all_customers_no_customers(service, dto_valido):
     service.customer_repository.return_none_on_get_all = True
     with pytest.raises(ValueError, match="Sem clientes cadastrados"):
         service.get_all_customers()
+
+#####################################################################################################
+# Testes para o método update_customer
+#####################################################################################################
+
+def test_update_customer_success(service, dto_update_success):
+    """Testa se o método update_customer atualiza um cliente com sucesso"""
+    result = service.update_customer(dto_update_success)
+    assert result > 0
+
+def test_update_customer_invalid_email(service, dto_update_invalid_email):
+    """Testa se o método update_customer retorna um erro se o email já existe"""
+    service.customer_repository.flag_email_exists = True
+    with pytest.raises(ValueError, match="Email já cadastrado"):
+        service.update_customer(dto_update_invalid_email)
+
+def test_update_customer_invalid_phone(service, dto_update_invalid_phone):
+    """Testa se o método update_customer retorna um erro se o telefone já existe"""
+    service.customer_repository.flag_phone_exists = True
+    with pytest.raises(ValueError, match="Telefone já cadastrado"):
+        service.update_customer(dto_update_invalid_phone)
+
+def test_update_customer_invalid_birth_date_past(service, dto_update_invalid_birth_date_past):
+    """Testa se o método update_customer retorna um erro se a data de nascimento é anterior a data atual"""
+    with pytest.raises(ValueError, match="Data de nascimento inválida"):
+        service.update_customer(dto_update_invalid_birth_date_past)
+
+def test_update_customer_invalid_birth_date_future(service, dto_update_invalid_birth_date_future):
+    """Testa se o método update_customer retorna um erro se a data de nascimento é futura"""
+    with pytest.raises(ValueError, match="Data de nascimento inválida"):
+        service.update_customer(dto_update_invalid_birth_date_future)
